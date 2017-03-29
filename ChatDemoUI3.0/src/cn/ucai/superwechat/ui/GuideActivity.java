@@ -1,6 +1,7 @@
 package cn.ucai.superwechat.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import butterknife.ButterKnife;
@@ -20,13 +21,16 @@ public class GuideActivity extends BaseActivity {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.btn_login, R.id.btn_register})
+    private static final String TAG = "GuideActivity";
+
+    @OnClick({R.id.btnLogin, R.id.btnRegister})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btn_login:
+            case R.id.btnLogin:
+                Log.i(TAG, "dianjilogin");
                 MFGT.gotoLogin(GuideActivity.this);
                 break;
-            case R.id.btn_register:
+            case R.id.btnRegister:
                 MFGT.gotoRegister(GuideActivity.this);
                 break;
         }
