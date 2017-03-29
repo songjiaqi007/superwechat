@@ -31,12 +31,11 @@ import android.widget.Toast;
 
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.easeui.utils.EaseCommonUtils;
-
-import cn.ucai.superwechat.SuperWeChatApplication;
-import cn.ucai.superwechat.SuperWeChatHelper;
+import cn.ucai.superwechat.DemoApplication;
+import cn.ucai.superwechat.DemoHelper;
 import cn.ucai.superwechat.R;
-import cn.ucai.superwechat.db.SuperWeChatDBManager;
+import cn.ucai.superwechat.db.DemoDBManager;
+import com.hyphenate.easeui.utils.EaseCommonUtils;
 
 /**
  * Login screen
@@ -45,8 +44,8 @@ import cn.ucai.superwechat.db.SuperWeChatDBManager;
 public class LoginActivity extends BaseActivity {
 	private static final String TAG = "LoginActivity";
 	public static final int REQUEST_CODE_SETNICK = 1;
-	private EditText et_username;
-	private EditText et_password;
+	private EditText usernameEditText;
+	private EditText passwordEditText;
 
 	private boolean progressShow;
 	private boolean autoLogin = false;
@@ -56,7 +55,7 @@ public class LoginActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		// enter the main activity if already logged in
-		if (SuperWeChatHelper.getInstance().isLoggedIn()) {
+		if (DemoHelper.getInstance().isLoggedIn()) {
 			autoLogin = true;
 			startActivity(new Intent(LoginActivity.this, MainActivity.class));
 
@@ -64,14 +63,14 @@ public class LoginActivity extends BaseActivity {
 		}
 		setContentView(R.layout.em_activity_login);
 
-		et_username = (EditText) findViewById(R.id.et_username);
-		et_password = (EditText) findViewById(R.id.et_password);
+		usernameEditText = (EditText) findViewById(R.id.username);
+		passwordEditText = (EditText) findViewById(R.id.password);
 
 		// if user changed, clear the password
-		et_username.addTextChangedListener(new TextWatcher() {
+		usernameEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				et_password.setText(null);
+				passwordEditText.setText(null);
 			}
 
 			@Override
@@ -85,7 +84,7 @@ public class LoginActivity extends BaseActivity {
 			}
 		});
 
-		et_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+		passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN ))) {
@@ -98,8 +97,8 @@ public class LoginActivity extends BaseActivity {
 			}
 		});
 
-		if (SuperWeChatHelper.getInstance().getCurrentUsernName() != null) {
-			et_username.setText(SuperWeChatHelper.getInstance().getCurrentUsernName());
+		if (DemoHelper.getInstance().getCurrentUsernName() != null) {
+			usernameEditText.setText(DemoHelper.getInstance().getCurrentUsernName());
 		}
 	}
 
@@ -113,8 +112,8 @@ public class LoginActivity extends BaseActivity {
 			Toast.makeText(this, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
 			return;
 		}
-		String currentUsername = et_username.getText().toString().trim();
-		String currentPassword = et_password.getText().toString().trim();
+		String currentUsername = usernameEditText.getText().toString().trim();
+		String currentPassword = passwordEditText.getText().toString().trim();
 
 		if (TextUtils.isEmpty(currentUsername)) {
 			Toast.makeText(this, R.string.User_name_cannot_be_empty, Toast.LENGTH_SHORT).show();
@@ -141,10 +140,10 @@ public class LoginActivity extends BaseActivity {
 
 		// After logout，the DemoDB may still be accessed due to async callback, so the DemoDB will be re-opened again.
 		// close it before login to make sure DemoDB not overlap
-        SuperWeChatDBManager.getInstance().closeDB();
+        DemoDBManager.getInstance().closeDB();
 
         // reset current user name before login
-        SuperWeChatHelper.getInstance().setCurrentUserName(currentUsername);
+        DemoHelper.getInstance().setCurrentUserName(currentUsername);
         
 		final long start = System.currentTimeMillis();
 		// call login method
@@ -162,7 +161,7 @@ public class LoginActivity extends BaseActivity {
 
 			    // update current user's display name for APNs
 				boolean updatenick = EMClient.getInstance().pushManager().updatePushNickname(
-						SuperWeChatApplication.currentUserNick.trim());
+						DemoApplication.currentUserNick.trim());
 				if (!updatenick) {
 					Log.e("LoginActivity", "update current user nick fail");
 				}
@@ -171,7 +170,7 @@ public class LoginActivity extends BaseActivity {
 				    pd.dismiss();
 				}
 				// get user's info (this should be get from App's server or 3rd party service)
-				SuperWeChatHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
+				DemoHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
 
 				Intent intent = new Intent(LoginActivity.this,
 						MainActivity.class);

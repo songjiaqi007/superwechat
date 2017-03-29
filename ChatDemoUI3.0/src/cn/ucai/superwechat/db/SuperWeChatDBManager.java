@@ -25,7 +25,6 @@ public class SuperWeChatDBManager {
     private DbOpenHelper dbHelper;
     
     private SuperWeChatDBManager(){
-        dbHelper = DbOpenHelper.getInstance(SuperWeChatApplication.getInstance().getApplicationContext());
     }
     
     public static synchronized SuperWeChatDBManager getInstance(){

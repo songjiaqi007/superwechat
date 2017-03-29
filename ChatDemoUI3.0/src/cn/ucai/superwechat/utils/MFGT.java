@@ -33,11 +33,6 @@ public class MFGT {
         starActivity(activity, MainActivity.class);
     }
 
-    public static void startActivityForResult(Activity activity, Intent intent, int requestCode) {
-        activity.startActivityForResult(intent,requestCode);
-        activity.overridePendingTransition(R.anim.push_right_in,R.anim.push_right_out);
-    }
-
     public static void gotoGuide(Activity activity) {
        starActivity(activity, GuideActivity.class);
     }
@@ -48,5 +43,6 @@ public class MFGT {
 
     public static void gotoRegister(Activity activity) {
         starActivity(activity, RegisterActivity.class);
+
     }
 }
