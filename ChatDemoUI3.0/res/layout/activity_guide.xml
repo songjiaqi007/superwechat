@@ -20,7 +20,7 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="165dp"
-        android:text="@string/login"
+        android:text="登录"
         android:background="@drawable/btn_enable_green"/>
     <Button
         android:id="@+id/btn_register"
@@ -29,7 +29,7 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="110dp"
-        android:text="@string/register"
+        android:text="注册"
         android:background="@drawable/rp_btn_white_normal_shape"/>
 
 </RelativeLayout>
