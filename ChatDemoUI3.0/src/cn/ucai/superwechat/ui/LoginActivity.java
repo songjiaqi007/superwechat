@@ -31,11 +31,12 @@ import android.widget.Toast;
 
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
-import cn.ucai.superwechat.DemoApplication;
-import cn.ucai.superwechat.DemoHelper;
+import com.hyphenate.easeui.utils.EaseCommonUtils;
+
+import cn.ucai.superwechat.SuperWeChatApplication;
+import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.db.DemoDBManager;
-import com.hyphenate.easeui.utils.EaseCommonUtils;
 
 /**
  * Login screen
@@ -44,8 +45,8 @@ import com.hyphenate.easeui.utils.EaseCommonUtils;
 public class LoginActivity extends BaseActivity {
 	private static final String TAG = "LoginActivity";
 	public static final int REQUEST_CODE_SETNICK = 1;
-	private EditText usernameEditText;
-	private EditText passwordEditText;
+	private EditText et_username;
+	private EditText et_password;
 
 	private boolean progressShow;
 	private boolean autoLogin = false;
@@ -55,7 +56,7 @@ public class LoginActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		// enter the main activity if already logged in
-		if (DemoHelper.getInstance().isLoggedIn()) {
+		if (SuperWeChatHelper.getInstance().isLoggedIn()) {
 			autoLogin = true;
 			startActivity(new Intent(LoginActivity.this, MainActivity.class));
 
@@ -63,14 +64,14 @@ public class LoginActivity extends BaseActivity {
 		}
 		setContentView(R.layout.em_activity_login);
 
-		usernameEditText = (EditText) findViewById(R.id.username);
-		passwordEditText = (EditText) findViewById(R.id.password);
+		et_username = (EditText) findViewById(R.id.et_username);
+		et_password = (EditText) findViewById(R.id.et_password);
 
 		// if user changed, clear the password
-		usernameEditText.addTextChangedListener(new TextWatcher() {
+		et_username.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				passwordEditText.setText(null);
+				et_password.setText(null);
 			}
 
 			@Override
@@ -84,7 +85,7 @@ public class LoginActivity extends BaseActivity {
 			}
 		});
 
-		passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+		et_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN ))) {
@@ -97,8 +98,8 @@ public class LoginActivity extends BaseActivity {
 			}
 		});
 
-		if (DemoHelper.getInstance().getCurrentUsernName() != null) {
-			usernameEditText.setText(DemoHelper.getInstance().getCurrentUsernName());
+		if (SuperWeChatHelper.getInstance().getCurrentUsernName() != null) {
+			et_username.setText(SuperWeChatHelper.getInstance().getCurrentUsernName());
 		}
 	}
 
@@ -112,8 +113,8 @@ public class LoginActivity extends BaseActivity {
 			Toast.makeText(this, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
 			return;
 		}
-		String currentUsername = usernameEditText.getText().toString().trim();
-		String currentPassword = passwordEditText.getText().toString().trim();
+		String currentUsername = et_username.getText().toString().trim();
+		String currentPassword = et_password.getText().toString().trim();
 
 		if (TextUtils.isEmpty(currentUsername)) {
 			Toast.makeText(this, R.string.User_name_cannot_be_empty, Toast.LENGTH_SHORT).show();
@@ -143,7 +144,7 @@ public class LoginActivity extends BaseActivity {
         DemoDBManager.getInstance().closeDB();
 
         // reset current user name before login
-        DemoHelper.getInstance().setCurrentUserName(currentUsername);
+        SuperWeChatHelper.getInstance().setCurrentUserName(currentUsername);
         
 		final long start = System.currentTimeMillis();
 		// call login method
@@ -161,7 +162,7 @@ public class LoginActivity extends BaseActivity {
 
 			    // update current user's display name for APNs
 				boolean updatenick = EMClient.getInstance().pushManager().updatePushNickname(
-						DemoApplication.currentUserNick.trim());
+						SuperWeChatApplication.currentUserNick.trim());
 				if (!updatenick) {
 					Log.e("LoginActivity", "update current user nick fail");
 				}
@@ -170,7 +171,7 @@ public class LoginActivity extends BaseActivity {
 				    pd.dismiss();
 				}
 				// get user's info (this should be get from App's server or 3rd party service)
-				DemoHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
+				SuperWeChatHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
 
 				Intent intent = new Intent(LoginActivity.this,
 						MainActivity.class);
