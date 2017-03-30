@@ -40,7 +40,7 @@ import butterknife.OnClick;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.SuperWeChatHelper;
-import cn.ucai.superwechat.db.SuperWeChatDBManager;
+import cn.ucai.superwechat.db.DemoDBManager;
 import cn.ucai.superwechat.utils.MD5;
 import cn.ucai.superwechat.utils.MFGT;
 
@@ -159,7 +159,7 @@ public class LoginActivity extends BaseActivity {
 
         // After logout，the DemoDB may still be accessed due to async callback, so the DemoDB will be re-opened again.
         // close it before login to make sure DemoDB not overlap
-        SuperWeChatDBManager.getInstance().closeDB();
+        DemoDBManager.getInstance().closeDB();
 
         // reset current user name before login
         SuperWeChatHelper.getInstance().setCurrentUserName(currentUsername);
@@ -189,7 +189,7 @@ public class LoginActivity extends BaseActivity {
                     pd.dismiss();
                 }
                 // get user's info (this should be get from App's server or 3rd party service)
-                SuperWeChatHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
+//                SuperWeChatHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
                 SuperWeChatHelper.getInstance().getUserProfileManager().asyncGetCurrentAppUserInfo();
 
                 Intent intent = new Intent(LoginActivity.this,

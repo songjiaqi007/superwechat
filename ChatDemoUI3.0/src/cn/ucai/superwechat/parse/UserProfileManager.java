@@ -5,6 +5,7 @@ import android.content.Context;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.easeui.domain.EaseUser;
+import com.hyphenate.easeui.domain.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,6 @@ import cn.ucai.superwechat.SuperWeChatHelper.DataSyncListener;
 import cn.ucai.superwechat.db.IUserModel;
 import cn.ucai.superwechat.db.OnCompleteListener;
 import cn.ucai.superwechat.db.UserModel;
-import cn.ucai.superwechat.domain.User;
 import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.PreferenceManager;
 import cn.ucai.superwechat.utils.Result;
@@ -138,6 +138,16 @@ public class UserProfileManager {
         return currentUser;
     }
 
+    public synchronized User getCurrentAppUserInfo() {
+        if (currentAppUser == null) {
+            String username = EMClient.getInstance().getCurrentUser();
+            currentAppUser = new User(username);
+            String nick = getCurrentUserNick();
+            currentAppUser.setMUserNick((nick != null) ? nick : username);
+        }
+        return currentAppUser;
+    }
+
     public boolean updateCurrentUserNickName(final String nickname) {
         boolean isSuccess = ParseManager.getInstance().updateParseNickName(nickname);
         if (isSuccess) {
@@ -163,7 +173,11 @@ public class UserProfileManager {
                             Result result = ResultUtils.getResultFromJson(s, User.class);
                             if (result != null && result.isRetMsg()) {
                                 User user = (User) result.getRetData();
-                                L.e(TAG,"asyncGetCurrentAppUserInfo,user="+user);
+                                L.e(TAG, "asyncGetCurrentAppUserInfo,user=" + user);
+                                if (user!=null) {
+                                    setCurrentAppUserNick(user.getMUserNick());
+                                    setCurrentAppAvatar(user.getAvatar());
+                                }
                             }
 
                         }
@@ -207,6 +221,16 @@ public class UserProfileManager {
 
     private void setCurrentUserAvatar(String avatar) {
         getCurrentUserInfo().setAvatar(avatar);
+        PreferenceManager.getInstance().setCurrentUserAvatar(avatar);
+    }
+
+    private void setCurrentAppUserNick(String nickname) {
+        getCurrentAppUserInfo().setMUserNick(nickname);
+        PreferenceManager.getInstance().setCurrentUserNick(nickname);
+    }
+
+    private void setCurrentAppAvatar(String avatar) {
+        getCurrentAppUserInfo().setAvatar(avatar);
         PreferenceManager.getInstance().setCurrentUserAvatar(avatar);
     }
 
