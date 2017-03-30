@@ -175,6 +175,7 @@ public class UserProfileManager {
                                 User user = (User) result.getRetData();
                                 L.e(TAG, "asyncGetCurrentAppUserInfo,user=" + user);
                                 if (user!=null) {
+                                    SuperWeChatHelper.getInstance().saveAppContact(user);
                                     setCurrentAppUserNick(user.getMUserNick());
                                     setCurrentAppAvatar(user.getAvatar());
                                 }
