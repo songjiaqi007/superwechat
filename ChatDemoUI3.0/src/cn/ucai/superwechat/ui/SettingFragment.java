@@ -37,16 +37,17 @@ import com.easemob.redpacketui.utils.RedPacketUtil;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
-import cn.ucai.superwechat.Constant;
-import cn.ucai.superwechat.SuperWeChatHelper;
-import cn.ucai.superwechat.SuperWeChatModel;
-import cn.ucai.superwechat.R;
-import cn.ucai.superwechat.utils.PreferenceManager;
 import com.hyphenate.easeui.widget.EaseSwitchButton;
 import com.hyphenate.util.EMLog;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import cn.ucai.superwechat.Constant;
+import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.SuperWeChatHelper;
+import cn.ucai.superwechat.SuperWeChatModel;
+import cn.ucai.superwechat.utils.PreferenceManager;
 
 /**
  * settings screen
@@ -54,7 +55,7 @@ import java.util.ArrayList;
  * 
  */
 @SuppressWarnings({"FieldCanBeLocal"})
-public class SettingsFragment extends Fragment implements OnClickListener {
+public class SettingFragment extends Fragment implements OnClickListener {
 
 	/**
 	 * new message notification

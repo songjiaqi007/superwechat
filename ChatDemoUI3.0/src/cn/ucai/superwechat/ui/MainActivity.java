@@ -135,8 +135,9 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     private void initFragment() {
         conversationListFragment = new ConversationListFragment();
         contactListFragment = new ContactListFragment();
-        SettingsFragment settingFragment = new SettingsFragment();
-        fragments = new Fragment[]{conversationListFragment, contactListFragment, settingFragment};
+//      SettingFragment settingFragment = new SettingFragment();
+        ProfileFragment profileFragment = new ProfileFragment();
+        fragments = new Fragment[]{conversationListFragment, contactListFragment, profileFragment};
 
 //        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, conversationListFragment)
 //                .add(R.id.fragment_container, contactListFragment).hide(contactListFragment).show(conversationListFragment)
@@ -145,7 +146,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         adpter.addFragment(conversationListFragment,getString(R.string.app_name));
         adpter.addFragment(contactListFragment,getString(R.string.contacts));
         adpter.addFragment(new DicoverFragment(),getString(R.string.discover));
-        adpter.addFragment(settingFragment,getString(R.string.me));
+        adpter.addFragment(profileFragment,getString(R.string.me));
         mLayoutViewpage.setAdapter(adpter);
         mLayoutViewpage.setOnPageChangeListener(this);
         mLayoutTabhost.setOnCheckedChangeListener(this);
@@ -369,7 +370,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     @Override
     public void onCheckedChange(int checkedPosition, boolean byUser) {
         L.e("main","onCheckedChange,checkedPosition="+checkedPosition+",byUser="+byUser);
-        mLayoutViewpage.setCurrentItem(checkedPosition);
+        mLayoutViewpage.setCurrentItem(checkedPosition,true);
 
 
     }
