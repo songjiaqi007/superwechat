@@ -1,7 +1,6 @@
 package cn.ucai.superwechat.ui;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -72,10 +71,9 @@ public class ProfileFragment extends Fragment {
         RedPacketUtil.startChangeActivity(getActivity());
     }
 
-    @OnClick(R.id.iv_profile_avatar)
-    public void avatar() {
-        startActivity(new Intent(getActivity(), UserProfileActivity.class).putExtra("setting", true)
-                .putExtra("username", EMClient.getInstance().getCurrentUser()));
+    @OnClick(R.id.layout_profile_view)
+    public void gotoUserInfo() {
+        MFGT.gotoUserInfo(getActivity(), true, EMClient.getInstance().getCurrentUser());
 
     }
 

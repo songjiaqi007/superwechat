@@ -8,7 +8,8 @@ import cn.ucai.superwechat.ui.GuideActivity;
 import cn.ucai.superwechat.ui.LoginActivity;
 import cn.ucai.superwechat.ui.MainActivity;
 import cn.ucai.superwechat.ui.RegisterActivity;
-import cn.ucai.superwechat.ui.SetServersActivity;
+import cn.ucai.superwechat.ui.SettingsActivity;
+import cn.ucai.superwechat.ui.UserProfileActivity;
 
 /**
  * Created by liuning on 2017/3/16.
@@ -47,6 +48,12 @@ public class MFGT {
     }
 
     public static void gotoSettings(Activity activity) {
-        starActivity(activity, SetServersActivity.class);
+        starActivity(activity, SettingsActivity.class);
+    }
+
+    public static void gotoUserInfo(Activity activity, boolean settings, String username) {
+        statActivity(activity, new Intent(activity, UserProfileActivity.class)
+                .putExtra("setting", settings)
+                .putExtra("username", username));
     }
 }

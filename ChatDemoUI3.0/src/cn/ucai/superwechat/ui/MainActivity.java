@@ -135,7 +135,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     private void initFragment() {
         conversationListFragment = new ConversationListFragment();
         contactListFragment = new ContactListFragment();
-//      SettingFragment settingFragment = new SettingFragment();
+//      SettingsActivity settingFragment = new SettingsActivity();
         ProfileFragment profileFragment = new ProfileFragment();
         fragments = new Fragment[]{conversationListFragment, contactListFragment, profileFragment};
 
@@ -216,6 +216,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 //        mTabs[2] = (Button) findViewById(R.id.btn_setting);
 //        // select first tab
 //        mTabs[0].setSelected(true);
+        mTxtLeft.setVisibility(View.VISIBLE);
 
     }
 

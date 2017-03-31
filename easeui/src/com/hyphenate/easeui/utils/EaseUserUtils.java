@@ -47,7 +47,7 @@ public class EaseUserUtils {
         if(user != null ){
             setAvatar(context, user.getAvatar(), imageView);
         }else{
-            Glide.with(context).load(R.drawable.default_hd_avatar).into(imageView);
+            Glide.with(context).load(R.drawable.default_avatar).into(imageView);
         }
     }
     
@@ -74,7 +74,7 @@ public class EaseUserUtils {
         if(user != null ){
             setAvatar(context, user.getAvatar(), imageView);
         }else{
-            Glide.with(context).load(R.drawable.default_hd_avatar).into(imageView);
+            Glide.with(context).load(R.drawable.default_avatar).into(imageView);
         }
     }
 
@@ -88,7 +88,7 @@ public class EaseUserUtils {
                 Glide.with(context).load(avatarPath).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ease_default_avatar).into(imageView);
             }
         }else{
-            Glide.with(context).load(R.drawable.default_hd_avatar).into(imageView);
+            Glide.with(context).load(R.drawable.default_avatar).into(imageView);
         }
     }
 
