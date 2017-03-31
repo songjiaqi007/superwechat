@@ -60,6 +60,8 @@ public class EaseBaseActivity extends FragmentActivity {
             if (getCurrentFocus() != null)
                 inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                         InputMethodManager.HIDE_NOT_ALWAYS);
+        }else {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         }
     }
 

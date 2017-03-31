@@ -54,6 +54,8 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
+            return;
         initData();
 
     }
@@ -61,8 +63,8 @@ public class ProfileFragment extends Fragment {
     private void initData() {
         String username = EMClient.getInstance().getCurrentUser();
         mTvProfileUsername.setText(username);
-        EaseUserUtils.setAppUserNick(username,mTvProfileNickname);
-        EaseUserUtils.setAppUserAvatar(getContext(),username,mIvProfileAvatar);
+        EaseUserUtils.setAppUserNick(username, mTvProfileNickname);
+        EaseUserUtils.setAppUserAvatar(getContext(), username, mIvProfileAvatar);
 
     }
 
@@ -86,9 +88,9 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(((MainActivity)getActivity()).isConflict){
+        if (((MainActivity) getActivity()).isConflict) {
             outState.putBoolean("isConflict", true);
-        }else if(((MainActivity)getActivity()).getCurrentAccountRemoved()){
+        } else if (((MainActivity) getActivity()).getCurrentAccountRemoved()) {
             outState.putBoolean(Constant.ACCOUNT_REMOVED, true);
         }
     }

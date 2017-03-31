@@ -267,6 +267,7 @@ public class SettingsActivity extends BaseActivity implements OnClickListener {
 				PreferenceManager.getInstance().setCustomAppkey(s.toString());
 			}
 		});
+		hideSoftKeyboard();
 	}
 
 	
