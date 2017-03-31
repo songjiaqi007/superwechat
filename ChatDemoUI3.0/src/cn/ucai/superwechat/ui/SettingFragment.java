@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -122,7 +123,13 @@ public class SettingFragment extends Fragment implements OnClickListener {
     private SuperWeChatModel settingsModel;
     private EMOptions chatOptions;
 	private EditText edit_custom_appkey;
-	
+
+	@Override
+	public void onCreate(@Nullable Bundle arg0) {
+		super.onCreate(arg0);
+
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.em_fragment_conversation_settings, container, false);

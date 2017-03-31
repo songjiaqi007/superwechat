@@ -68,7 +68,7 @@ import cn.ucai.superwechat.widget.DMTabHost;
 import cn.ucai.superwechat.widget.MFViewPager;
 
 @SuppressLint("NewApi")
-public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener,DMTabHost.OnCheckedChangeListener{
+public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, DMTabHost.OnCheckedChangeListener {
 
     protected static final String TAG = "MainActivity";
     @BindView(R.id.txt_left)
@@ -143,10 +143,10 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 //                .add(R.id.fragment_container, contactListFragment).hide(contactListFragment).show(conversationListFragment)
 //                .commit();
         adpter = new MainTabAdpter(getSupportFragmentManager());
-        adpter.addFragment(conversationListFragment,getString(R.string.app_name));
-        adpter.addFragment(contactListFragment,getString(R.string.contacts));
-        adpter.addFragment(new DicoverFragment(),getString(R.string.discover));
-        adpter.addFragment(profileFragment,getString(R.string.me));
+        adpter.addFragment(conversationListFragment, getString(R.string.app_name));
+        adpter.addFragment(contactListFragment, getString(R.string.contacts));
+        adpter.addFragment(new DicoverFragment(), getString(R.string.discover));
+        adpter.addFragment(profileFragment, getString(R.string.me));
         mLayoutViewpage.setAdapter(adpter);
         mLayoutViewpage.setOnPageChangeListener(this);
         mLayoutTabhost.setOnCheckedChangeListener(this);
@@ -350,27 +350,27 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        L.e("main","onPageScrolled,position="+position+",positionOffset="+positionOffset+",positionOffsetPixels="+positionOffsetPixels);
+        L.e("main", "onPageScrolled,position=" + position + ",positionOffset=" + positionOffset + ",positionOffsetPixels=" + positionOffsetPixels);
     }
 
     @Override
     public void onPageSelected(int position) {
-        L.e("main","onPageSelected,position="+position);
+        L.e("main", "onPageSelected,position=" + position);
         mLayoutTabhost.setChecked(position);
 
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
-        L.e("main","onPageScrollStateChanged,state="+state);
+        L.e("main", "onPageScrollStateChanged,state=" + state);
 
 
     }
 
     @Override
     public void onCheckedChange(int checkedPosition, boolean byUser) {
-        L.e("main","onCheckedChange,checkedPosition="+checkedPosition+",byUser="+byUser);
-        mLayoutViewpage.setCurrentItem(checkedPosition,true);
+        L.e("main", "onCheckedChange,checkedPosition=" + checkedPosition + ",byUser=" + byUser);
+        mLayoutViewpage.setCurrentItem(checkedPosition, true);
 
 
     }
