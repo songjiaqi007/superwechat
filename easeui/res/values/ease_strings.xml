@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
+
     <string name="text_ack_msg">Read</string>
     <string name="text_delivered_msg">Delivered</string>
     <string name="back">Back</string>
@@ -48,7 +48,7 @@
     <string name="video">[Video]</string>
     <string name="file">[file]</string>
     <string name="dynamic_expression">[Dynamic expression]</string>
-     <string name="voice_prefix">[Voice]</string>
+    <string name="voice_prefix">[Voice]</string>
     <string name="voice_call">[Voice call]</string>
     <string name="video_call">[Video call]</string>
     <string name="button_cancel">Cancel</string>
@@ -253,7 +253,7 @@
     <string name="search_new">Search</string>
     <string name="were_mentioned">You were montioned</string>
     <string name="all_members">All members</string>
-    
+
     <string name="Delete_the_contact">Delete the contact</string>
     <string name="Move_into_the_blacklist_new">Move into the blacklist</string>
     <string name="Change_the_group_name">Change group name</string>
