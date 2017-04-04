@@ -42,17 +42,17 @@ import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.db.SuperWeChatDBManager;
 import cn.ucai.superwechat.utils.MD5;
-import cn.ucai.superwechat.utils.MFGT;
 
 /**
  * Login screen
+ *
  */
 public class LoginActivity extends BaseActivity {
     private static final String TAG = "LoginActivity";
     public static final int REQUEST_CODE_SETNICK = 1;
     @BindView(R.id.img_back)
     ImageView mImgBack;
-    @BindView(R.id.tv_title)
+    @BindView(R.id.txt_title)
     TextView mTxtTitle;
     @BindView(R.id.et_username)
     EditText mEtUsername;
@@ -191,7 +191,6 @@ public class LoginActivity extends BaseActivity {
                 // get user's info (this should be get from App's server or 3rd party service)
 //                SuperWeChatHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
                 SuperWeChatHelper.getInstance().getUserProfileManager().asyncGetCurrentAppUserInfo();
-
                 Intent intent = new Intent(LoginActivity.this,
                         MainActivity.class);
                 startActivity(intent);
@@ -224,6 +223,7 @@ public class LoginActivity extends BaseActivity {
 
     /**
      * register
+     *
      */
     public void register() {
         startActivityForResult(new Intent(this, RegisterActivity.class), 0);
@@ -237,8 +237,7 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-
-    @OnClick({R.id.btn_login, R.id.btn_register,R.id.img_back})
+    @OnClick({R.id.btn_login, R.id.btn_register})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_login:
@@ -248,10 +247,8 @@ public class LoginActivity extends BaseActivity {
                 register();
                 break;
             case R.id.img_back:
-                MFGT.finish(LoginActivity.this);
+                finish();
                 break;
         }
     }
-
-
 }

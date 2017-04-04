@@ -12,48 +12,53 @@ import cn.ucai.superwechat.ui.SettingsActivity;
 import cn.ucai.superwechat.ui.UserProfileActivity;
 
 /**
- * Created by liuning on 2017/3/16.
+ * Created by clawpo on 2017/3/16.
  */
 
 public class MFGT {
-    public static void finish(Activity activity) {
+    public static void finish(Activity activity){
         activity.finish();
         activity.overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
     }
 
-    public static void starActivity(Activity activity, Class cls) {
+    public static void startActivity(Activity activity, Class cls){
         activity.startActivity(new Intent(activity,cls));
         activity.overridePendingTransition(R.anim.push_right_in,R.anim.push_right_out);
     }
 
-    public static void statActivity(Activity activity, Intent intent) {
+    public static void startActivity(Activity activity,Intent intent){
         activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.push_right_in,R.anim.push_right_out);
     }
 
     public static void gotoMain(Activity activity) {
-        starActivity(activity, MainActivity.class);
+        startActivity(activity, MainActivity.class);
     }
 
-    public static void gotoGuide(Activity activity) {
-       starActivity(activity, GuideActivity.class);
+    public static void startActivityForResult(Activity activity,Intent intent,int requestCode){
+        activity.startActivityForResult(intent,requestCode);
+        activity.overridePendingTransition(R.anim.push_right_in,R.anim.push_right_out);
+    }
+
+    public static void gotoGuide(Activity activity){
+        startActivity(activity,GuideActivity.class);
     }
 
     public static void gotoLogin(Activity activity) {
-        starActivity(activity, LoginActivity.class);
+        startActivity(activity, new Intent(activity,LoginActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
+
     public static void gotoRegister(Activity activity) {
-        starActivity(activity, RegisterActivity.class);
+        startActivity(activity, RegisterActivity.class);
     }
 
     public static void gotoSettings(Activity activity) {
-        starActivity(activity, SettingsActivity.class);
+        startActivity(activity,SettingsActivity.class);
     }
 
-    public static void gotoUserInfo(Activity activity, boolean settings, String username) {
-        statActivity(activity, new Intent(activity, UserProfileActivity.class)
-                .putExtra("setting", settings)
-                .putExtra("username", username));
+    public static void gotoUserInfo(Activity activity) {
+        startActivity(activity,UserProfileActivity.class);
     }
 }
