@@ -1,15 +1,18 @@
 package cn.ucai.superwechat.parse;
 
 import android.content.Context;
+import android.content.Intent;
 
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.domain.User;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.SuperWeChatHelper.DataSyncListener;
 import cn.ucai.superwechat.db.IUserModel;
@@ -43,7 +46,6 @@ public class UserProfileManager {
 
     private EaseUser currentUser;
     private User currentAppUser;
-
     IUserModel userModel;
 
     public UserProfileManager() {
@@ -124,6 +126,7 @@ public class UserProfileManager {
     public synchronized void reset() {
         isSyncingContactInfosWithServer = false;
         currentUser = null;
+        currentAppUser = null;
         PreferenceManager.getInstance().removeCurrentUserInfo();
     }
 
@@ -138,51 +141,99 @@ public class UserProfileManager {
         return currentUser;
     }
 
-    public synchronized User getCurrentAppUserInfo() {
-        if (currentAppUser == null) {
+    public synchronized User getCurrentAppUserInfo(){
+        L.e(TAG,"getCurrentAppUserInfo,currentAppUser="+currentAppUser);
+        if (currentAppUser == null || currentAppUser.getMUserName()==null){
             String username = EMClient.getInstance().getCurrentUser();
             currentAppUser = new User(username);
             String nick = getCurrentUserNick();
             currentAppUser.setMUserNick((nick != null) ? nick : username);
+
         }
         return currentAppUser;
     }
 
     public boolean updateCurrentUserNickName(final String nickname) {
-        boolean isSuccess = ParseManager.getInstance().updateParseNickName(nickname);
-        if (isSuccess) {
-            setCurrentUserNick(nickname);
-        }
-        return isSuccess;
+        userModel.updateUserNick(appContext, EMClient.getInstance().getCurrentUser(), nickname,
+                new OnCompleteListener<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        boolean updatenick = false;
+                        if (s!=null){
+                            Result result = ResultUtils.getResultFromJson(s, User.class);
+                            if (result!=null && result.isRetMsg()){
+                                User user = (User) result.getRetData();
+                                if (user!=null){
+                                    updatenick = true;
+                                    setCurrentAppUserNick(user.getMUserNick());
+                                    SuperWeChatHelper.getInstance().saveAppContact(user);
+                                }
+                            }
+                        }
+                        appContext.sendBroadcast(new Intent(I.REQUEST_UPDATE_USER_NICK)
+                                .putExtra(I.User.NICK,updatenick));
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        appContext.sendBroadcast(new Intent(I.REQUEST_UPDATE_USER_NICK)
+                                .putExtra(I.User.NICK,false));
+                    }
+                });
+        return false;
     }
 
-    public String uploadUserAvatar(byte[] data) {
-        String avatarUrl = ParseManager.getInstance().uploadParseAvatar(data);
-        if (avatarUrl != null) {
-            setCurrentUserAvatar(avatarUrl);
-        }
-        return avatarUrl;
-    }
+    public void uploadUserAvatar(File file) {
+        userModel.uploadAvatar(appContext, EMClient.getInstance().getCurrentUser(), file,
+                new OnCompleteListener<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        boolean success = false;
+                        if (s!=null){
+                            Result result = ResultUtils.getResultFromJson(s, User.class);
+                            if (result!=null && result.isRetMsg()){
+                                User user = (User) result.getRetData();
+                                if (user!=null){
+                                    success = true;
+                                    setCurrentAppUserAvatar(user.getAvatar());
+                                    SuperWeChatHelper.getInstance().saveAppContact(user);
+                                }
+                            }
+                        }
+                        appContext.sendBroadcast(new Intent(I.REQUEST_UPDATE_AVATAR)
+                                .putExtra(I.Avatar.UPDATE_TIME,success));
+                    }
 
+                    @Override
+                    public void onError(String error) {
+                        appContext.sendBroadcast(new Intent(I.REQUEST_UPDATE_AVATAR)
+                                .putExtra(I.Avatar.UPDATE_TIME,false));
+                    }
+                });
+//		String avatarUrl = ParseManager.getInstance().uploadParseAvatar(data);
+//		if (avatarUrl != null) {
+//			setCurrentUserAvatar(avatarUrl);
+//		}
+//		return avatarUrl;
+    }
     public void asyncGetCurrentAppUserInfo() {
         userModel.loadUserInfo(appContext, EMClient.getInstance().getCurrentUser(),
                 new OnCompleteListener<String>() {
                     @Override
                     public void onSuccess(String s) {
-                        if (s != null) {
+                        if (s!=null){
                             Result result = ResultUtils.getResultFromJson(s, User.class);
-                            if (result != null && result.isRetMsg()) {
+                            if (result!=null && result.isRetMsg()){
                                 User user = (User) result.getRetData();
-                                L.e(TAG, "asyncGetCurrentAppUserInfo,user=" + user);
-                                if (user!=null) {
-                                    SuperWeChatHelper.getInstance().saveAppContact(user);
+//								L.e(TAG,"asyncGetCurrentAppUserInfo,user="+user);
+                                if (user!=null){
+                                    currentAppUser = user;
                                     setCurrentAppUserNick(user.getMUserNick());
-                                    setCurrentAppAvatar(user.getAvatar());
+                                    setCurrentAppUserAvatar(user.getAvatar());
+                                    SuperWeChatHelper.getInstance().saveAppContact(user);
                                 }
                             }
-
                         }
-
                     }
 
                     @Override
@@ -197,7 +248,7 @@ public class UserProfileManager {
 
             @Override
             public void onSuccess(EaseUser value) {
-                if (value != null) {
+                if(value != null){
                     setCurrentUserNick(value.getNick());
                     setCurrentUserAvatar(value.getAvatar());
                 }
@@ -210,11 +261,9 @@ public class UserProfileManager {
         });
 
     }
-
-    public void asyncGetUserInfo(final String username, final EMValueCallBack<EaseUser> callback) {
+    public void asyncGetUserInfo(final String username,final EMValueCallBack<EaseUser> callback){
         ParseManager.getInstance().asyncGetUserInfo(username, callback);
     }
-
     private void setCurrentUserNick(String nickname) {
         getCurrentUserInfo().setNick(nickname);
         PreferenceManager.getInstance().setCurrentUserNick(nickname);
@@ -225,12 +274,13 @@ public class UserProfileManager {
         PreferenceManager.getInstance().setCurrentUserAvatar(avatar);
     }
 
-    private void setCurrentAppUserNick(String nickname) {
+    private void setCurrentAppUserNick(String nickname){
         getCurrentAppUserInfo().setMUserNick(nickname);
         PreferenceManager.getInstance().setCurrentUserNick(nickname);
     }
 
-    private void setCurrentAppAvatar(String avatar) {
+    private void setCurrentAppUserAvatar(String avatar){
+        L.e(TAG,"setCurrentAppUserAvatar,avatar="+avatar);
         getCurrentAppUserInfo().setAvatar(avatar);
         PreferenceManager.getInstance().setCurrentUserAvatar(avatar);
     }
