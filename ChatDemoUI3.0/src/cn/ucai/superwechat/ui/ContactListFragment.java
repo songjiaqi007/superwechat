@@ -13,21 +13,6 @@
  */
 package cn.ucai.superwechat.ui;
 
-import java.util.Hashtable;
-import java.util.Map;
-
-import com.hyphenate.chat.EMClient;
-import cn.ucai.superwechat.SuperWeChatHelper;
-
-import cn.ucai.superwechat.R;
-import cn.ucai.superwechat.db.InviteMessgeDao;
-import cn.ucai.superwechat.db.UserDao;
-import cn.ucai.superwechat.widget.ContactItemView;
-import com.hyphenate.easeui.domain.EaseUser;
-import com.hyphenate.easeui.ui.EaseContactListFragment;
-import com.hyphenate.util.EMLog;
-import com.hyphenate.util.NetUtils;
-
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -41,6 +26,23 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
+
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.easeui.domain.EaseUser;
+import com.hyphenate.easeui.ui.EaseContactListFragment;
+import com.hyphenate.util.EMLog;
+import com.hyphenate.util.NetUtils;
+
+import java.util.Hashtable;
+import java.util.Map;
+
+import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.SuperWeChatHelper;
+import cn.ucai.superwechat.db.InviteMessgeDao;
+import cn.ucai.superwechat.db.UserDao;
+import cn.ucai.superwechat.widget.ContactItemView;
+import cn.ucai.superwechat.widget.TitleMenu.ActionItem;
+import cn.ucai.superwechat.widget.TitleMenu.TitlePopup;
 
 /**
  * contact list
@@ -98,6 +100,13 @@ public class ContactListFragment extends EaseContactListFragment {
     @SuppressWarnings("unchecked")
     @Override
     protected void setUpView() {
+        hideTitleBar();
+        final TitlePopup titlePopup = new TitlePopup(getContext());
+
+        titlePopup.addAction(new ActionItem(getContext(),R.string.menu_groupchat,R.drawable.icon_menu_group));
+        titlePopup.addAction(new ActionItem(getContext(),R.string.menu_addfriend,R.drawable.icon_menu_addfriend));
+        titlePopup.addAction(new ActionItem(getContext(),R.string.menu_qrcode,R.drawable.icon_menu_sao));
+        titlePopup.addAction(new ActionItem(getContext(),R.string.menu_money,R.drawable.icon_menu_money));
         titleBar.setRightImageResource(R.drawable.em_add);
         titleBar.setRightLayoutClickListener(new OnClickListener() {
             
@@ -133,7 +142,8 @@ public class ContactListFragment extends EaseContactListFragment {
 
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), AddContactActivity.class));
+//                startActivity(new Intent(getActivity(), AddContactActivity.class));
+                titlePopup.show(titleBar);
             }
         });
         
@@ -234,7 +244,7 @@ public class ContactListFragment extends EaseContactListFragment {
 	/**
 	 * delete contact
 	 * 
-	 * @param toDeleteUser
+//	 * @param toDeleteUser
 	 */
 	public void deleteContact(final EaseUser tobeDeleteUser) {
 		String st1 = getResources().getString(R.string.deleting);

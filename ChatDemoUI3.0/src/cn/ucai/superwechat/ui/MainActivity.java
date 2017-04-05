@@ -33,7 +33,6 @@ import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.easemob.redpacketsdk.constant.RPConstant;
@@ -47,7 +46,9 @@ import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMConversation.EMConversationType;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.easeui.widget.EaseTitleBar;
 import com.hyphenate.util.EMLog;
+import com.hyphenate.util.NetUtils;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.update.UmengUpdateAgent;
 
@@ -64,19 +65,23 @@ import cn.ucai.superwechat.db.UserDao;
 import cn.ucai.superwechat.runtimepermissions.PermissionsManager;
 import cn.ucai.superwechat.runtimepermissions.PermissionsResultAction;
 import cn.ucai.superwechat.utils.L;
+import cn.ucai.superwechat.utils.MFGT;
 import cn.ucai.superwechat.widget.DMTabHost;
 import cn.ucai.superwechat.widget.MFViewPager;
+import cn.ucai.superwechat.widget.TitleMenu.ActionItem;
+import cn.ucai.superwechat.widget.TitleMenu.TitlePopup;
 
 @SuppressLint("NewApi")
 public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, DMTabHost.OnCheckedChangeListener {
 
     protected static final String TAG = "MainActivity";
-    @BindView(R.id.txt_left)
-    TextView mTxtLeft;
+    TitlePopup titlePopup;
     @BindView(R.id.layout_viewpage)
     MFViewPager mLayoutViewpage;
     @BindView(R.id.layout_tabhost)
     DMTabHost mLayoutTabhost;
+    @BindView(R.id.title_bar)
+    EaseTitleBar mTitleBar;
 //    // textview for unread message count
 //    private TextView unreadLabel;
 //    // textview for unread event message
@@ -216,9 +221,35 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 //        mTabs[2] = (Button) findViewById(R.id.btn_setting);
 //        // select first tab
 //        mTabs[0].setSelected(true);
-        mTxtLeft.setVisibility(View.VISIBLE);
+//        mTxtLeft.setVisibility(View.VISIBLE);
 
+        mTitleBar.setRightLayoutClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               if (NetUtils.hasDataConnection(MainActivity.this));
+                // 进入添加好友页
+                titlePopup.show(mTitleBar);
+            }
+        });
+
+
+        titlePopup = new TitlePopup(MainActivity.this);
+
+        titlePopup.addAction(new ActionItem(MainActivity.this, R.string.menu_groupchat, R.drawable.icon_menu_group));
+        titlePopup.addAction(new ActionItem(MainActivity.this, R.string.menu_addfriend, R.drawable.icon_menu_addfriend));
+        titlePopup.addAction(new ActionItem(MainActivity.this, R.string.menu_qrcode, R.drawable.icon_menu_sao));
+        titlePopup.addAction(new ActionItem(MainActivity.this, R.string.menu_money, R.drawable.icon_menu_money));
+        titlePopup.setItemOnClickListener(showItemListener);
     }
+
+    TitlePopup.OnItemOnClickListener showItemListener = new TitlePopup.OnItemOnClickListener() {
+        @Override
+        public void onItemClick(ActionItem item, int position) {
+            if (position==1) {
+                MFGT.gotoAddContact(MainActivity.this);
+            }
+        }
+    };
 
     /**
      * on tab clicked
