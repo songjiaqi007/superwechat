@@ -19,7 +19,6 @@ import java.util.Map;
 import cn.ucai.superwechat.Constant;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.domain.InviteMessage;
-import cn.ucai.superwechat.domain.InviteMessage.InviteMesageStatus;
 import cn.ucai.superwechat.domain.RobotUser;
 
 public class SuperWeChatDBManager {
@@ -29,12 +28,11 @@ public class SuperWeChatDBManager {
     private SuperWeChatDBManager(){
         dbHelper = DbOpenHelper.getInstance(SuperWeChatApplication.getInstance().getApplicationContext());
     }
-    
+
     public static synchronized SuperWeChatDBManager getInstance(){
         if(dbMgr == null){
             dbMgr = new SuperWeChatDBManager();
         }
-
         return dbMgr;
     }
 
@@ -50,19 +48,18 @@ public class SuperWeChatDBManager {
             for (EaseUser user : contactList) {
                 ContentValues values = new ContentValues();
                 values.put(UserDao.COLUMN_NAME_ID, user.getUsername());
-                if (user.getNick() != null)
+                if(user.getNick() != null)
                     values.put(UserDao.COLUMN_NAME_NICK, user.getNick());
-                if (user.getAvatar() != null)
+                if(user.getAvatar() != null)
                     values.put(UserDao.COLUMN_NAME_AVATAR, user.getAvatar());
                 db.replace(UserDao.TABLE_NAME, null, values);
             }
         }
     }
 
-
     /**
      * get contact list
-     * 
+     *
      * @return
      */
     synchronized public Map<String, EaseUser> getContactList() {
@@ -79,7 +76,7 @@ public class SuperWeChatDBManager {
                 user.setAvatar(avatar);
                 if (username.equals(Constant.NEW_FRIENDS_USERNAME) || username.equals(Constant.GROUP_USERNAME)
                         || username.equals(Constant.CHAT_ROOM)|| username.equals(Constant.CHAT_ROBOT)) {
-                        user.setInitialLetter("");
+                    user.setInitialLetter("");
                 } else {
                     EaseCommonUtils.setUserInitialLetter(user);
                 }
@@ -89,7 +86,7 @@ public class SuperWeChatDBManager {
         }
         return users;
     }
-    
+
     /**
      * delete a contact
      * @param username
@@ -100,7 +97,7 @@ public class SuperWeChatDBManager {
             db.delete(UserDao.TABLE_NAME, UserDao.COLUMN_NAME_ID + " = ?", new String[]{username});
         }
     }
-    
+
     /**
      * save a contact
      * @param user
@@ -118,30 +115,29 @@ public class SuperWeChatDBManager {
         }
     }
 
-
     public void setDisabledGroups(List<String> groups){
         setList(UserDao.COLUMN_NAME_DISABLED_GROUPS, groups);
     }
-    
-    public List<String>  getDisabledGroups(){       
+
+    public List<String>  getDisabledGroups(){
         return getList(UserDao.COLUMN_NAME_DISABLED_GROUPS);
     }
-    
+
     public void setDisabledIds(List<String> ids){
         setList(UserDao.COLUMN_NAME_DISABLED_IDS, ids);
     }
-    
+
     public List<String> getDisabledIds(){
         return getList(UserDao.COLUMN_NAME_DISABLED_IDS);
     }
-    
+
     synchronized private void setList(String column, List<String> strList){
         StringBuilder strBuilder = new StringBuilder();
-        
+
         for(String hxid:strList){
             strBuilder.append(hxid).append("$");
         }
-        
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         if (db.isOpen()) {
             ContentValues values = new ContentValues();
@@ -150,7 +146,7 @@ public class SuperWeChatDBManager {
             db.update(UserDao.PREF_TABLE_NAME, values, null,null);
         }
     }
-    
+
     synchronized private List<String> getList(String column){
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("select " + column + " from " + UserDao.PREF_TABLE_NAME,null);
@@ -163,20 +159,20 @@ public class SuperWeChatDBManager {
         if (strVal == null || strVal.equals("")) {
             return null;
         }
-        
+
         cursor.close();
-        
+
         String[] array = strVal.split("$");
-        
+
         if(array.length > 0){
             List<String> list = new ArrayList<String>();
             Collections.addAll(list, array);
             return list;
         }
-        
+
         return null;
     }
-    
+
     /**
      * save a message
      * @param message
@@ -195,17 +191,17 @@ public class SuperWeChatDBManager {
             values.put(InviteMessgeDao.COLUMN_NAME_STATUS, message.getStatus().ordinal());
             values.put(InviteMessgeDao.COLUMN_NAME_GROUPINVITER, message.getGroupInviter());
             db.insert(InviteMessgeDao.TABLE_NAME, null, values);
-            
-            Cursor cursor = db.rawQuery("select last_insert_rowid() from " + InviteMessgeDao.TABLE_NAME,null); 
+
+            Cursor cursor = db.rawQuery("select last_insert_rowid() from " + InviteMessgeDao.TABLE_NAME,null);
             if(cursor.moveToFirst()){
                 id = cursor.getInt(0);
             }
-            
+
             cursor.close();
         }
         return id;
     }
-    
+
     /**
      * update message
      * @param msgId
@@ -217,7 +213,7 @@ public class SuperWeChatDBManager {
             db.update(InviteMessgeDao.TABLE_NAME, values, InviteMessgeDao.COLUMN_NAME_ID + " = ?", new String[]{String.valueOf(msgId)});
         }
     }
-    
+
     /**
      * get messges
      * @return
@@ -237,7 +233,7 @@ public class SuperWeChatDBManager {
                 long time = cursor.getLong(cursor.getColumnIndex(InviteMessgeDao.COLUMN_NAME_TIME));
                 int status = cursor.getInt(cursor.getColumnIndex(InviteMessgeDao.COLUMN_NAME_STATUS));
                 String groupInviter = cursor.getString(cursor.getColumnIndex(InviteMessgeDao.COLUMN_NAME_GROUPINVITER));
-                
+
                 msg.setId(id);
                 msg.setFrom(from);
                 msg.setGroupId(groupid);
@@ -245,33 +241,33 @@ public class SuperWeChatDBManager {
                 msg.setReason(reason);
                 msg.setTime(time);
                 msg.setGroupInviter(groupInviter);
-                
-                if(status == InviteMesageStatus.BEINVITEED.ordinal())
-                    msg.setStatus(InviteMesageStatus.BEINVITEED);
-                else if(status == InviteMesageStatus.BEAGREED.ordinal())
-                    msg.setStatus(InviteMesageStatus.BEAGREED);
-                else if(status == InviteMesageStatus.BEREFUSED.ordinal())
-                    msg.setStatus(InviteMesageStatus.BEREFUSED);
-                else if(status == InviteMesageStatus.AGREED.ordinal())
-                    msg.setStatus(InviteMesageStatus.AGREED);
-                else if(status == InviteMesageStatus.REFUSED.ordinal())
-                    msg.setStatus(InviteMesageStatus.REFUSED);
-                else if(status == InviteMesageStatus.BEAPPLYED.ordinal())
-                    msg.setStatus(InviteMesageStatus.BEAPPLYED);
-                else if(status == InviteMesageStatus.GROUPINVITATION.ordinal())
-                    msg.setStatus(InviteMesageStatus.GROUPINVITATION);
-                else if(status == InviteMesageStatus.GROUPINVITATION_ACCEPTED.ordinal())
-                    msg.setStatus(InviteMesageStatus.GROUPINVITATION_ACCEPTED);
-                else if(status == InviteMesageStatus.GROUPINVITATION_DECLINED.ordinal())
-                    msg.setStatus(InviteMesageStatus.GROUPINVITATION_DECLINED);
-                
+
+                if(status == InviteMessage.InviteMesageStatus.BEINVITEED.ordinal())
+                    msg.setStatus(InviteMessage.InviteMesageStatus.BEINVITEED);
+                else if(status == InviteMessage.InviteMesageStatus.BEAGREED.ordinal())
+                    msg.setStatus(InviteMessage.InviteMesageStatus.BEAGREED);
+                else if(status == InviteMessage.InviteMesageStatus.BEREFUSED.ordinal())
+                    msg.setStatus(InviteMessage.InviteMesageStatus.BEREFUSED);
+                else if(status == InviteMessage.InviteMesageStatus.AGREED.ordinal())
+                    msg.setStatus(InviteMessage.InviteMesageStatus.AGREED);
+                else if(status == InviteMessage.InviteMesageStatus.REFUSED.ordinal())
+                    msg.setStatus(InviteMessage.InviteMesageStatus.REFUSED);
+                else if(status == InviteMessage.InviteMesageStatus.BEAPPLYED.ordinal())
+                    msg.setStatus(InviteMessage.InviteMesageStatus.BEAPPLYED);
+                else if(status == InviteMessage.InviteMesageStatus.GROUPINVITATION.ordinal())
+                    msg.setStatus(InviteMessage.InviteMesageStatus.GROUPINVITATION);
+                else if(status == InviteMessage.InviteMesageStatus.GROUPINVITATION_ACCEPTED.ordinal())
+                    msg.setStatus(InviteMessage.InviteMesageStatus.GROUPINVITATION_ACCEPTED);
+                else if(status == InviteMessage.InviteMesageStatus.GROUPINVITATION_DECLINED.ordinal())
+                    msg.setStatus(InviteMessage.InviteMesageStatus.GROUPINVITATION_DECLINED);
+
                 msgs.add(msg);
             }
             cursor.close();
         }
         return msgs;
     }
-    
+
     /**
      * delete invitation message
      * @param from
@@ -282,7 +278,7 @@ public class SuperWeChatDBManager {
             db.delete(InviteMessgeDao.TABLE_NAME, InviteMessgeDao.COLUMN_NAME_FROM + " = ?", new String[]{from});
         }
     }
-    
+
     synchronized int getUnreadNotifyCount(){
         int count = 0;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -293,9 +289,9 @@ public class SuperWeChatDBManager {
             }
             cursor.close();
         }
-         return count;
+        return count;
     }
-    
+
     synchronized void setUnreadNotifyCount(int count){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         if(db.isOpen()){
@@ -305,79 +301,80 @@ public class SuperWeChatDBManager {
             db.update(InviteMessgeDao.TABLE_NAME, values, null,null);
         }
     }
-    
+
     synchronized public void closeDB(){
         if(dbHelper != null){
             dbHelper.closeDB();
         }
         dbMgr = null;
     }
-    
-    
+
+
     /**
      * Save Robot list
      */
-	synchronized public void saveRobotList(List<RobotUser> robotList) {
-		SQLiteDatabase db = dbHelper.getWritableDatabase();
-		if (db.isOpen()) {
-			db.delete(UserDao.ROBOT_TABLE_NAME, null, null);
-			for (RobotUser item : robotList) {
-				ContentValues values = new ContentValues();
-				values.put(UserDao.ROBOT_COLUMN_NAME_ID, item.getUsername());
-				if (item.getNick() != null)
-					values.put(UserDao.ROBOT_COLUMN_NAME_NICK, item.getNick());
-				if (item.getAvatar() != null)
-					values.put(UserDao.ROBOT_COLUMN_NAME_AVATAR, item.getAvatar());
-				db.replace(UserDao.ROBOT_TABLE_NAME, null, values);
-			}
-		}
-	}
-    
+    synchronized public void saveRobotList(List<RobotUser> robotList) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        if (db.isOpen()) {
+            db.delete(UserDao.ROBOT_TABLE_NAME, null, null);
+            for (RobotUser item : robotList) {
+                ContentValues values = new ContentValues();
+                values.put(UserDao.ROBOT_COLUMN_NAME_ID, item.getUsername());
+                if (item.getNick() != null)
+                    values.put(UserDao.ROBOT_COLUMN_NAME_NICK, item.getNick());
+                if (item.getAvatar() != null)
+                    values.put(UserDao.ROBOT_COLUMN_NAME_AVATAR, item.getAvatar());
+                db.replace(UserDao.ROBOT_TABLE_NAME, null, values);
+            }
+        }
+    }
+
     /**
      * load robot list
      */
-	synchronized public Map<String, RobotUser> getRobotList() {
-		SQLiteDatabase db = dbHelper.getReadableDatabase();
-		Map<String, RobotUser> users = null;
-		if (db.isOpen()) {
-			Cursor cursor = db.rawQuery("select * from " + UserDao.ROBOT_TABLE_NAME, null);
-			if(cursor.getCount()>0){
-				users = new Hashtable<String, RobotUser>();
-			}
+    synchronized public Map<String, RobotUser> getRobotList() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Map<String, RobotUser> users = null;
+        if (db.isOpen()) {
+            Cursor cursor = db.rawQuery("select * from " + UserDao.ROBOT_TABLE_NAME, null);
+            if(cursor.getCount()>0){
+                users = new Hashtable<String, RobotUser>();
+            }
             while (cursor.moveToNext()) {
-				String username = cursor.getString(cursor.getColumnIndex(UserDao.ROBOT_COLUMN_NAME_ID));
-				String nick = cursor.getString(cursor.getColumnIndex(UserDao.ROBOT_COLUMN_NAME_NICK));
-				String avatar = cursor.getString(cursor.getColumnIndex(UserDao.ROBOT_COLUMN_NAME_AVATAR));
-				RobotUser user = new RobotUser(username);
-				user.setNick(nick);
-				user.setAvatar(avatar);
-				String headerName = null;
-				if (!TextUtils.isEmpty(user.getNick())) {
-					headerName = user.getNick();
-				} else {
-					headerName = user.getUsername();
-				}
-				if(Character.isDigit(headerName.charAt(0))){
-					user.setInitialLetter("#");
-				}else{
-					user.setInitialLetter(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target
-							.substring(0, 1).toUpperCase());
-					char header = user.getInitialLetter().toLowerCase().charAt(0);
-					if (header < 'a' || header > 'z') {
-						user.setInitialLetter("#");
-					}
-				}
+                String username = cursor.getString(cursor.getColumnIndex(UserDao.ROBOT_COLUMN_NAME_ID));
+                String nick = cursor.getString(cursor.getColumnIndex(UserDao.ROBOT_COLUMN_NAME_NICK));
+                String avatar = cursor.getString(cursor.getColumnIndex(UserDao.ROBOT_COLUMN_NAME_AVATAR));
+                RobotUser user = new RobotUser(username);
+                user.setNick(nick);
+                user.setAvatar(avatar);
+                String headerName = null;
+                if (!TextUtils.isEmpty(user.getNick())) {
+                    headerName = user.getNick();
+                } else {
+                    headerName = user.getUsername();
+                }
+                if(Character.isDigit(headerName.charAt(0))){
+                    user.setInitialLetter("#");
+                }else{
+                    user.setInitialLetter(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target
+                            .substring(0, 1).toUpperCase());
+                    char header = user.getInitialLetter().toLowerCase().charAt(0);
+                    if (header < 'a' || header > 'z') {
+                        user.setInitialLetter("#");
+                    }
+                }
 
                 try {
                     users.put(username, user);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-			}
-			cursor.close();
-		}
-		return users;
-	}
+            }
+            cursor.close();
+        }
+        return users;
+    }
+
     /**
      * save contact list
      *
@@ -396,17 +393,16 @@ public class SuperWeChatDBManager {
                     values.put(UserDao.USER_COLUMN_NAME_AVATAR_ID, user.getMAvatarId());
                 if(user.getMAvatarPath() != null)
                     values.put(UserDao.USER_COLUMN_NAME_AVATAR_PATH, user.getMAvatarPath());
-                if(user.getMAvatarSuffix() != null)
-                    values.put(UserDao.USER_COLUMN_NAME_AVATAR_SUFFIX, user.getMAvatarSuffix());
                 if(user.getMAvatarType() != null)
                     values.put(UserDao.USER_COLUMN_NAME_AVATAR_TYPE, user.getMAvatarType());
+                if(user.getMAvatarSuffix() != null)
+                    values.put(UserDao.USER_COLUMN_NAME_AVATAR_SUFFIX, user.getMAvatarSuffix());
                 if(user.getMAvatarLastUpdateTime() != null)
                     values.put(UserDao.USER_COLUMN_NAME_AVATAR_UPDATE_TIME, user.getMAvatarLastUpdateTime());
                 db.replace(UserDao.USER_TABLE_NAME, null, values);
             }
         }
     }
-
 
     /**
      * get contact list
@@ -419,22 +415,21 @@ public class SuperWeChatDBManager {
         if (db.isOpen()) {
             Cursor cursor = db.rawQuery("select * from " + UserDao.USER_TABLE_NAME /* + " desc" */, null);
             while (cursor.moveToNext()) {
-                User user = new User();
-                user.setMUserName(cursor.getString(cursor.getColumnIndex(UserDao.USER_COLUMN_NAME)));
+                String username = cursor.getString(cursor.getColumnIndex(UserDao.USER_COLUMN_NAME));
+                User user = new User(username);
                 user.setMUserNick(cursor.getString(cursor.getColumnIndex(UserDao.USER_COLUMN_NAME_NICK)));
                 user.setMAvatarId(cursor.getInt(cursor.getColumnIndex(UserDao.USER_COLUMN_NAME_AVATAR_ID)));
                 user.setMAvatarPath(cursor.getString(cursor.getColumnIndex(UserDao.USER_COLUMN_NAME_AVATAR_PATH)));
-                user.setMAvatarType(cursor.getInt(cursor.getColumnIndex(UserDao.USER_COLUMN_NAME_AVATAR_TYPE)));
                 user.setMAvatarSuffix(cursor.getString(cursor.getColumnIndex(UserDao.USER_COLUMN_NAME_AVATAR_SUFFIX)));
+                user.setMAvatarType(cursor.getInt(cursor.getColumnIndex(UserDao.USER_COLUMN_NAME_AVATAR_TYPE)));
                 user.setMAvatarLastUpdateTime(cursor.getString(cursor.getColumnIndex(UserDao.USER_COLUMN_NAME_AVATAR_UPDATE_TIME)));
                 EaseCommonUtils.setAppUserInitialLetter(user);
-                users.put(user.getMUserName(), user);
+                users.put(username, user);
             }
             cursor.close();
         }
         return users;
     }
-
 
     /**
      * delete a contact
@@ -446,7 +441,6 @@ public class SuperWeChatDBManager {
             db.delete(UserDao.USER_TABLE_NAME, UserDao.USER_COLUMN_NAME + " = ?", new String[]{username});
         }
     }
-
 
     /**
      * save a contact
@@ -462,10 +456,10 @@ public class SuperWeChatDBManager {
             values.put(UserDao.USER_COLUMN_NAME_AVATAR_ID, user.getMAvatarId());
         if(user.getMAvatarPath() != null)
             values.put(UserDao.USER_COLUMN_NAME_AVATAR_PATH, user.getMAvatarPath());
-        if(user.getMAvatarSuffix() != null)
-            values.put(UserDao.USER_COLUMN_NAME_AVATAR_SUFFIX, user.getMAvatarSuffix());
         if(user.getMAvatarType() != null)
             values.put(UserDao.USER_COLUMN_NAME_AVATAR_TYPE, user.getMAvatarType());
+        if(user.getMAvatarSuffix() != null)
+            values.put(UserDao.USER_COLUMN_NAME_AVATAR_SUFFIX, user.getMAvatarSuffix());
         if(user.getMAvatarLastUpdateTime() != null)
             values.put(UserDao.USER_COLUMN_NAME_AVATAR_UPDATE_TIME, user.getMAvatarLastUpdateTime());
         if(db.isOpen()){
@@ -473,4 +467,3 @@ public class SuperWeChatDBManager {
         }
     }
 }
-

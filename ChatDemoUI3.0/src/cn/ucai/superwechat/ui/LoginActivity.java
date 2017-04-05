@@ -45,19 +45,18 @@ import cn.ucai.superwechat.utils.MD5;
 
 /**
  * Login screen
- *
  */
 public class LoginActivity extends BaseActivity {
     private static final String TAG = "LoginActivity";
     public static final int REQUEST_CODE_SETNICK = 1;
     @BindView(R.id.img_back)
     ImageView mImgBack;
-    @BindView(R.id.txt_title)
-    TextView mTxtTitle;
     @BindView(R.id.et_username)
     EditText mEtUsername;
     @BindView(R.id.et_password)
     EditText mEtPassword;
+    @BindView(R.id.tv_title)
+    TextView mTvTitle;
 
     private boolean progressShow;
     private boolean autoLogin = false;
@@ -85,8 +84,8 @@ public class LoginActivity extends BaseActivity {
 
     private void initView() {
         mImgBack.setVisibility(View.VISIBLE);
-        mTxtTitle.setVisibility(View.VISIBLE);
-        mTxtTitle.setText(R.string.login);
+        mTvTitle.setVisibility(View.VISIBLE);
+        mTvTitle.setText(R.string.login);
     }
 
     private void setListener() {
@@ -223,7 +222,6 @@ public class LoginActivity extends BaseActivity {
 
     /**
      * register
-     *
      */
     public void register() {
         startActivityForResult(new Intent(this, RegisterActivity.class), 0);
