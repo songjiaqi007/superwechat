@@ -13,7 +13,9 @@
  */
 package cn.ucai.superwechat.domain;
 
-public class InviteMessage {
+import java.io.Serializable;
+
+public class InviteMessage implements Serializable {
 	private String from;
 	private long time;
 	private String reason;
@@ -24,10 +26,10 @@ public class InviteMessage {
 	private String groupId;
 	private String groupName;
 	private String groupInviter;
-	
+
 
 	private int id;
-	
+
 	public String getFrom() {
 		return from;
 	}
@@ -76,8 +78,8 @@ public class InviteMessage {
 		this.status = status;
 	}
 
-	
-	
+
+
 	public int getId() {
 		return id;
 	}
@@ -101,27 +103,27 @@ public class InviteMessage {
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
-	
+
 	public void setGroupInviter(String inviter) {
-	    groupInviter = inviter;
+		groupInviter = inviter;
 	}
-	
+
 	public String getGroupInviter() {
-	    return groupInviter;	    
+		return groupInviter;
 	}
 
 
 
 	public enum InviteMesageStatus{
-	    
-	    //==contact
+
+		//==contact
 		/**being invited*/
 		BEINVITEED,
 		/**being refused*/
 		BEREFUSED,
 		/**remote user already agreed*/
 		BEAGREED,
-		
+
 		//==group application
 		/**remote user apply to join*/
 		BEAPPLYED,
@@ -129,17 +131,14 @@ public class InviteMessage {
 		AGREED,
 		/**you refused the join request*/
 		REFUSED,
-		
+
 		//==group invitation
 		/**received remote user's invitation**/
 		GROUPINVITATION,
 		/**remote user accept your invitation**/
 		GROUPINVITATION_ACCEPTED,
-        /**remote user declined your invitation**/
+		/**remote user declined your invitation**/
 		GROUPINVITATION_DECLINED
 	}
-	
+
 }
-
-
-
