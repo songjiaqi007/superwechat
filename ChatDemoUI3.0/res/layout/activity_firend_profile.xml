@@ -109,7 +109,7 @@
                 android:layout_height="45dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="20dp"
+                        android:layout_marginTop="20dp"
                 android:visibility="gone"
                 android:background="@drawable/setting_item_selector"
                 android:paddingBottom="7dp"

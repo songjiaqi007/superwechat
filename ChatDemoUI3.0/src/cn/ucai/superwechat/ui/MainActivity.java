@@ -341,6 +341,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     }
 
     private void registerBroadcastReceiver() {
+
         broadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constant.ACTION_CONTACT_CHANAGED);
@@ -389,6 +390,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     public void onPageSelected(int position) {
         L.e("main", "onPageSelected,position=" + position);
         mLayoutTabhost.setChecked(position);
+        currentTabIndex = position;
 
     }
 
@@ -403,7 +405,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     public void onCheckedChange(int checkedPosition, boolean byUser) {
         L.e("main", "onCheckedChange,checkedPosition=" + checkedPosition + ",byUser=" + byUser);
         mLayoutViewpage.setCurrentItem(checkedPosition, true);
-
+        currentTabIndex = checkedPosition;
 
     }
 
@@ -480,16 +482,17 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
      * update the total unread count
      */
     public void updateUnreadAddressLable() {
-//        runOnUiThread(new Runnable() {
-//            public void run() {
-//                int count = getUnreadAddressCountTotal();
+        runOnUiThread(new Runnable() {
+            public void run() {
+                int count = getUnreadAddressCountTotal();
+                mLayoutTabhost.setHasNew(1,count>0);
 //                if (count > 0) {
 //                    unreadAddressLable.setVisibility(View.VISIBLE);
 //                } else {
 //                    unreadAddressLable.setVisibility(View.INVISIBLE);
 //                }
-//            }
-//        });
+            }
+        });
 
     }
 
