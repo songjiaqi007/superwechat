@@ -52,7 +52,8 @@ import cn.ucai.superwechat.utils.PreferenceManager;
  *
  */
 @SuppressWarnings({"FieldCanBeLocal"})
-public class SettingsActivity extends BaseActivity implements OnClickListener {
+public class
+SettingsActivity extends BaseActivity implements OnClickListener {
 
     /**
      * new message notification

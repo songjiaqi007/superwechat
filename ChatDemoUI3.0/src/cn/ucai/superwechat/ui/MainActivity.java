@@ -404,7 +404,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     @Override
     public void onCheckedChange(int checkedPosition, boolean byUser) {
         L.e("main", "onCheckedChange,checkedPosition=" + checkedPosition + ",byUser=" + byUser);
-        mLayoutViewpage.setCurrentItem(checkedPosition, true);
+        mLayoutViewpage.setCurrentItem(checkedPosition, false);
         currentTabIndex = checkedPosition;
 
     }
