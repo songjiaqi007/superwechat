@@ -177,9 +177,10 @@ public class EaseContactAdapter extends ArrayAdapter<User> implements SectionInd
                 final ArrayList<User> newValues = new ArrayList<User>();
                 for (int i = 0; i < count; i++) {
                     final User user = mOriginalList.get(i);
-                    String username = user.getMUserName();
+                    String username = user.getMUserName().toLowerCase();
+                    String nickname = user.getMUserNick().toLowerCase();
 
-                    if (username.startsWith(prefixString)) {
+                    if (username.contains(prefixString)  || nickname.contains(prefixString)) {
                         newValues.add(user);
                     } else {
                         final String[] words = username.split(" ");
