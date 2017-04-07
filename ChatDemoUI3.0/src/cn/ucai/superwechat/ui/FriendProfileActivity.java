@@ -115,25 +115,30 @@ public class FriendProfileActivity extends BaseActivity {
         }
     }
 
-    private void syncUserInfo(){
+    @OnClick(R.id.btn_send_msg)
+    public void sendmsg() {
+        MFGT.gotoChat(FriendProfileActivity.this,user.getMUserName());
+    }
+
+    private void syncUserInfo() {
         //从服务器异步加载用户的最新信息,填充到好友列表或者新的朋友列表
         model.loadUserInfo(FriendProfileActivity.this, user.getMUserName(),
                 new OnCompleteListener<String>() {
                     @Override
                     public void onSuccess(String s) {
-                        if (s!=null){
-                            Result result = ResultUtils.getResultFromJson(s,User.class);
-                            if (result!=null && result.isRetMsg()){
+                        if (s != null) {
+                            Result result = ResultUtils.getResultFromJson(s, User.class);
+                            if (result != null && result.isRetMsg()) {
                                 User u = (User) result.getRetData();
-                                if (u!=null){
-                                    if (msg!=null) {
+                                if (u != null) {
+                                    if (msg != null) {
                                         //update msg
                                         ContentValues values = new ContentValues();
                                         values.put(InviteMessgeDao.COLUMN_NAME_NICK, u.getMUserNick());
                                         values.put(InviteMessgeDao.COLUMN_NAME_AVATAR, u.getAvatar());
                                         InviteMessgeDao dao = new InviteMessgeDao(FriendProfileActivity.this);
-                                        dao.updateMessage(msg.getId(),values);
-                                    }else if(isFriend) {
+                                        dao.updateMessage(msg.getId(), values);
+                                    } else if (isFriend) {
                                         //update user
                                         SuperWeChatHelper.getInstance().saveAppContact(u);
                                     }

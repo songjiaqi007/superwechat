@@ -119,7 +119,7 @@ public class ContactListFragment extends EaseContactListFragment {
                     // demo中直接进入聊天页面，实际一般是进入用户详情页
                     MFGT.gotoFriend(getActivity(),user);
 
-//                    startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", username));
+
                 }
             }
         });
