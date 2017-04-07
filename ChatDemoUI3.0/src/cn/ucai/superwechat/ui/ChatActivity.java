@@ -9,6 +9,7 @@ import com.hyphenate.util.EasyUtils;
 
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.runtimepermissions.PermissionsManager;
+import cn.ucai.superwechat.utils.MFGT;
 
 /**
  * chat activity，EaseChatFragment was used {@link #}
@@ -57,8 +58,9 @@ public class ChatActivity extends BaseActivity{
     public void onBackPressed() {
         chatFragment.onBackPressed();
         if (EasyUtils.isSingleActivity(this)) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(this, MainActivity.class);
+//            startActivity(intent);
+            MFGT.gotoMain(ChatActivity.this,true);
         }
     }
     

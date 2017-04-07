@@ -57,6 +57,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.ucai.superwechat.Constant;
+import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.adapter.MainTabAdpter;
@@ -528,6 +529,10 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     @Override
     protected void onResume() {
         super.onResume();
+        boolean isChat = getIntent().getBooleanExtra(I.IS_FROM_CHAT, false);
+        if (isChat) {
+
+        }
 
         if (!isConflict && !isCurrentAccountRemoved) {
             updateUnreadLabel();
@@ -636,6 +641,11 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         showExceptionDialogFromIntent(intent);
+        boolean isChat = intent.getBooleanExtra(I.IS_FROM_CHAT, false);
+        if (isChat) {
+            mLayoutTabhost.setChecked(0);
+            mLayoutViewpage.setCurrentItem(0);
+        }
     }
 
     /**
