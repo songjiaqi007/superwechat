@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="59dp"
-     android:id="@+id/list_itease_layout"
-     android:background="#fff"
-    android:gravity="center_vertical" >
+                android:layout_width="match_parent"
+                android:layout_height="59dp"
+                android:id="@+id/list_itease_layout"
+                android:background="#fff"
+                android:gravity="center_vertical" >
 
     <RelativeLayout
         android:id="@+id/avatar_container"
@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true" >
 
-      <ImageView
+        <ImageView
             android:id="@+id/avatar"
             android:layout_width="45dp"
             android:layout_height="45dp"
@@ -35,16 +35,6 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="7dp"
-        android:layout_marginTop="6dp"
-        android:layout_toRightOf="@id/avatar_container"
-        android:textColor="@color/list_itease_primary_color"
-        android:textSize="16sp" />
-
-    <TextView
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -53,6 +43,19 @@
         android:layout_marginTop="6dp"
         android:textColor="@color/list_itease_secondary_color"
         android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="6dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_toRightOf="@id/avatar_container"
+        android:layout_toLeftOf="@id/time"
+        android:textColor="@color/list_itease_primary_color"
+        android:textSize="16sp" />
 
     <ImageView
         android:id="@+id/msg_state"
@@ -65,7 +68,7 @@
         android:src="@drawable/ease_msg_state_fail_resend"
         android:visibility="gone" />
 
-    <TextView 
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
@@ -79,7 +82,7 @@
         android:paddingLeft="7dp"
         android:visibility="gone"
         />
-    
+
     <TextView
         android:id="@+id/message"
         android:layout_toLeftOf="@id/time"
