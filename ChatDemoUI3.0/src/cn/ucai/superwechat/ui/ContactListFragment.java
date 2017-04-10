@@ -36,12 +36,18 @@ import com.hyphenate.util.EMLog;
 import java.util.Hashtable;
 import java.util.Map;
 
+import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatHelper;
 import cn.ucai.superwechat.SuperWeChatHelper.DataSyncListener;
+import cn.ucai.superwechat.db.IUserModel;
 import cn.ucai.superwechat.db.InviteMessgeDao;
+import cn.ucai.superwechat.db.OnCompleteListener;
 import cn.ucai.superwechat.db.UserDao;
+import cn.ucai.superwechat.db.UserModel;
 import cn.ucai.superwechat.utils.MFGT;
+import cn.ucai.superwechat.utils.Result;
+import cn.ucai.superwechat.utils.ResultUtils;
 import cn.ucai.superwechat.widget.ContactItemView;
 
 /**
@@ -57,6 +63,8 @@ public class ContactListFragment extends EaseContactListFragment {
     private View loadingView;
     private ContactItemView applicationItem;
     private InviteMessgeDao inviteMessgeDao;
+    ProgressDialog pd;
+    IUserModel userModel;
 
     @SuppressLint("InflateParams")
     @Override
@@ -75,6 +83,7 @@ public class ContactListFragment extends EaseContactListFragment {
         contentContainer.addView(loadingView);
 
         registerForContextMenu(listView);
+        userModel = new UserModel();
     }
 
     @Override
@@ -226,21 +235,36 @@ public class ContactListFragment extends EaseContactListFragment {
      *
      * @param tobeDeleteUser
      */
-    public void deleteContact(final EaseUser tobeDeleteUser) {
+
+    public void delContact(final User tobeDeleteUser) {
         String st1 = getResources().getString(R.string.deleting);
         final String st2 = getResources().getString(R.string.Delete_failed);
         final ProgressDialog pd = new ProgressDialog(getActivity());
         pd.setMessage(st1);
         pd.setCanceledOnTouchOutside(false);
         pd.show();
+        removeContact(tobeDeleteUser);
+    }
+
+
+    public void deleteContact(final EaseUser tobeDeleteUser) {
+        String st1 = getResources().getString(R.string.deleting);
+        pd = new ProgressDialog(getActivity());
+        pd.setMessage(st1);
+        pd.setCanceledOnTouchOutside(false);
+        pd.show();
+    }
+
+    private void removeEMContact(final User tobeDeleteUser) {
+        final String st2 = getResources().getString(R.string.Delete_failed);
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    EMClient.getInstance().contactManager().deleteContact(tobeDeleteUser.getUsername());
+                    EMClient.getInstance().contactManager().deleteContact(tobeDeleteUser.getMUserName());
                     // remove user from memory and database
                     UserDao dao = new UserDao(getActivity());
-                    dao.deleteContact(tobeDeleteUser.getUsername());
-                    SuperWeChatHelper.getInstance().getContactList().remove(tobeDeleteUser.getUsername());
+                    dao.deleteContact(tobeDeleteUser.getMUserName());
+                    SuperWeChatHelper.getInstance().getContactList().remove(tobeDeleteUser.getMUserName());
                     getActivity().runOnUiThread(new Runnable() {
                         public void run() {
                             pd.dismiss();
@@ -262,6 +286,28 @@ public class ContactListFragment extends EaseContactListFragment {
             }
         }).start();
 
+    }
+
+    private void removeContact(final User tobeDeleteUser) {
+        final String st2 = getResources().getString(R.string.Delete_failed);
+        userModel.delContact(getContext(), EMClient.getInstance().getCurrentUser(), tobeDeleteUser.getMUserName(),
+                new OnCompleteListener<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        if (s!=null) {
+                            Result result = ResultUtils.getResultFromJson(s, I.User.class);
+                            if (result!=null && result.isRetMsg()) {
+                                removeEMContact(tobeDeleteUser);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        pd.dismiss();
+                        Toast.makeText(getActivity(),st2,Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     class ContactSyncListener implements DataSyncListener{
