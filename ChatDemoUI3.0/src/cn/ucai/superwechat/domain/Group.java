@@ -1,4 +1,4 @@
-package cn.ucai.superwechat.domain;
+package com.hyphenate.easeui.domain;
 
 import java.io.Serializable;
 
@@ -135,14 +135,14 @@ public class Group implements Serializable{
 	public void setMGroupAllowInvites(Boolean mgroupAllowInvites) {
 		this.mgroupAllowInvites = mgroupAllowInvites;
 	}
-	
+
 	public String getMAvatarSuffix() {
 		return mavatarSuffix==null?".jpg":mavatarSuffix;
 	}
 	public void setMAvatarSuffix(String mavatarSuffix) {
 		this.mavatarSuffix = mavatarSuffix;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "GroupAvatar [mavatarId=" + mavatarId + ", mavatarUserName=" + mavatarUserName + ", mavatarPath="
@@ -162,5 +162,5 @@ public class Group implements Serializable{
 		String path = "http://101.251.196.90:8000/SuperWeChatServerV2.0/downloadAvatar?name_or_hxid="+hxid+"&avatarType=group_icon&m_avatar_suffix=.jpg&updatetime=";
 		return path;
 	}
-	
+
 }

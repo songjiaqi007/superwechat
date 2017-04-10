@@ -17,24 +17,24 @@ import com.hyphenate.chat.EMContact;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 
 public class EaseUser extends EMContact {
-    
-    /**
-     * initial letter for nickname
-     */
+
+	/**
+	 * initial letter for nickname
+	 */
 	protected String initialLetter;
 	/**
 	 * avatar of the user
 	 */
 	protected String avatar;
-	
+
 	public EaseUser(String username){
-	    this.username = username;
+		this.username = username;
 	}
 
 	public String getInitialLetter() {
-	    if(initialLetter == null){
-            EaseCommonUtils.setUserInitialLetter(this);
-        }
+		if(initialLetter == null){
+			EaseCommonUtils.setUserInitialLetter(this);
+		}
 		return initialLetter;
 	}
 
@@ -44,14 +44,14 @@ public class EaseUser extends EMContact {
 
 
 	public String getAvatar() {
-        return avatar;
-    }
+		return avatar;
+	}
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
 
-    @Override
+	@Override
 	public int hashCode() {
 		return 17 * getUsername().hashCode();
 	}
@@ -68,4 +68,6 @@ public class EaseUser extends EMContact {
 	public String toString() {
 		return nick == null ? username : nick;
 	}
+
+
 }

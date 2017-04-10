@@ -13,6 +13,7 @@
  */
 package cn.ucai.superwechat.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,12 +31,15 @@ import android.widget.Toast;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMGroup;
-import cn.ucai.superwechat.Constant;
-import cn.ucai.superwechat.R;
-import cn.ucai.superwechat.adapter.GroupAdapter;
+import com.hyphenate.easeui.widget.EaseTitleBar;
 import com.hyphenate.exceptions.HyphenateException;
 
 import java.util.List;
+
+import cn.ucai.superwechat.Constant;
+import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.adapter.GroupAdapter;
+import cn.ucai.superwechat.utils.MFGT;
 
 public class GroupsActivity extends BaseActivity {
 	public static final String TAG = "GroupsActivity";
@@ -46,42 +50,47 @@ public class GroupsActivity extends BaseActivity {
 	public static GroupsActivity instance;
 	private View progressBar;
 	private SwipeRefreshLayout swipeRefreshLayout;
-	
-	
-	Handler handler = new Handler(){
-	    public void handleMessage(android.os.Message msg) {
-	        swipeRefreshLayout.setRefreshing(false);
-	        switch (msg.what) {
-            case 0:
-                refresh();
-                break;
-            case 1:
-                Toast.makeText(GroupsActivity.this, R.string.Failed_to_get_group_chat_information, Toast.LENGTH_LONG).show();
-                break;
+	EaseTitleBar titleBar;
 
-            default:
-                break;
-            }
-	    }
+
+	Handler handler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			swipeRefreshLayout.setRefreshing(false);
+			switch (msg.what) {
+				case 0:
+					refresh();
+					break;
+				case 1:
+					Toast.makeText(GroupsActivity.this, R.string.Failed_to_get_group_chat_information, Toast.LENGTH_LONG).show();
+					break;
+
+				default:
+					break;
+			}
+		}
 	};
 
-		
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.em_fragment_groups);
 
 		instance = this;
-		inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+		inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		grouplist = EMClient.getInstance().groupManager().getAllGroups();
 		groupListView = (ListView) findViewById(R.id.list);
 		//show group list
-        groupAdapter = new GroupAdapter(this, 1, grouplist);
-        groupListView.setAdapter(groupAdapter);
-		
+		groupAdapter = new GroupAdapter(this, 1, grouplist);
+		groupListView.setAdapter(groupAdapter);
+
+
+		titleBar = (EaseTitleBar) findViewById(R.id.title_bar);
+		initBack();
+
 		swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
 		swipeRefreshLayout.setColorSchemeResources(R.color.holo_blue_bright, R.color.holo_green_light,
-		                R.color.holo_orange_light, R.color.holo_red_light);
+				R.color.holo_orange_light, R.color.holo_red_light);
 		//pull down to refresh
 		swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 
@@ -101,7 +110,7 @@ public class GroupsActivity extends BaseActivity {
 				}.start();
 			}
 		});
-		
+
 		groupListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -135,7 +144,7 @@ public class GroupsActivity extends BaseActivity {
 				return false;
 			}
 		});
-		
+
 	}
 
 	@Override
@@ -145,15 +154,15 @@ public class GroupsActivity extends BaseActivity {
 
 	@Override
 	public void onResume() {
-        refresh();
+		refresh();
 		super.onResume();
 	}
-	
+
 	private void refresh(){
-	    grouplist = EMClient.getInstance().groupManager().getAllGroups();
-        groupAdapter = new GroupAdapter(this, 1, grouplist);
-        groupListView.setAdapter(groupAdapter);
-        groupAdapter.notifyDataSetChanged();
+		grouplist = EMClient.getInstance().groupManager().getAllGroups();
+		groupAdapter = new GroupAdapter(this, 1, grouplist);
+		groupListView.setAdapter(groupAdapter);
+		groupAdapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -162,7 +171,12 @@ public class GroupsActivity extends BaseActivity {
 		instance = null;
 	}
 
-	public void back(View view) {
-		finish();
+	public void initBack() {
+		titleBar.setLeftLayoutClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				MFGT.finish(GroupsActivity.this);
+			}
+		});
 	}
 }
