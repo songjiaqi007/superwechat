@@ -12,6 +12,7 @@ import cn.ucai.superwechat.domain.InviteMessage;
 import cn.ucai.superwechat.ui.AddContactActivity;
 import cn.ucai.superwechat.ui.ChatActivity;
 import cn.ucai.superwechat.ui.FriendProfileActivity;
+import cn.ucai.superwechat.ui.GroupsActivity;
 import cn.ucai.superwechat.ui.GuideActivity;
 import cn.ucai.superwechat.ui.LoginActivity;
 import cn.ucai.superwechat.ui.MainActivity;
@@ -44,9 +45,10 @@ public class MFGT {
     public static void gotoMain(Activity activity) {
         startActivity(activity, MainActivity.class);
     }
+
     public static void gotoMain(Activity activity,boolean isChat) {
         startActivity(activity, new Intent(activity,MainActivity.class)
-        .putExtra(I.IS_FROM_CHAT,isChat));
+                .putExtra(I.IS_FROM_CHAT,isChat));
     }
 
     public static void startActivityForResult(Activity activity,Intent intent,int requestCode){
@@ -90,6 +92,11 @@ public class MFGT {
                 .putExtra(I.User.NICK,msg));
     }
 
+    public static void gotoFriend(Context activity, String username) {
+        startActivity((Activity) activity,new Intent(activity,FriendProfileActivity.class)
+                .putExtra(I.User.USER_NAME,username));
+    }
+
     public static void gotoSendAddFirend(Activity activity, String userName) {
         startActivity(activity,new Intent(activity,SendAddFirendActivity.class)
                 .putExtra(I.User.USER_NAME,userName));
@@ -100,6 +107,11 @@ public class MFGT {
     }
 
     public static void gotoChat(Activity activity, String username) {
-        startActivity(activity,new Intent(activity, ChatActivity.class).putExtra("userId", username));
+        startActivity(activity,new Intent(activity, ChatActivity.class)
+                .putExtra("userId", username));
+    }
+
+    public static void gotoGroups(Activity activity) {
+        startActivity(activity, GroupsActivity.class);
     }
 }
