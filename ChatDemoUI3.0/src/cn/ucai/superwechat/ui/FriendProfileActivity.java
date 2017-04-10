@@ -74,39 +74,50 @@ public class FriendProfileActivity extends BaseActivity {
     private void initData() {
         model = new UserModel();
         user = (User) getIntent().getSerializableExtra(I.User.TABLE_NAME);
-        if (user!=null){
-            showUserInfo();
-        }else{
+        if (user == null){
             msg  = (InviteMessage) getIntent().getSerializableExtra(I.User.NICK);
-            if (msg!=null){
+            if (msg!=null) {
                 user = new User(msg.getFrom());
                 user.setMUserNick(msg.getNickname());
                 user.setAvatar(msg.getAvatar());
-                showUserInfo();
-            }else {
-                MFGT.finish(FriendProfileActivity.this);
-//                showUserInfo();
-//                syncUserInfo();
             }
+        }
+        if (user == null){
+            String username = getIntent().getStringExtra(I.User.USER_NAME);
+            if (username!=null){
+                user = new User(username);
+            }
+        }
+        if (user==null){
+            MFGT.finish(FriendProfileActivity.this);
+        }else {
+            showUserInfo();
+            syncUserInfo();
         }
     }
 
     private void showUserInfo() {
         isFriend = SuperWeChatHelper.getInstance().getAppContactList().containsKey(user.getMUserName());
-        if (isFriend){
+        if (isFriend && user.getMUserNick()!=null){
             SuperWeChatHelper.getInstance().saveAppContact(user);
         }
         mTvUserinfoName.setText(user.getMUserName());
         EaseUserUtils.setAppUserAvatar(FriendProfileActivity.this,user,mProfileImage);
         EaseUserUtils.setAppUserNick(user,mTvUserinfoNick);
         showFirend(isFriend);
-        syncUserInfo();
+//        syncUserInfo();
     }
 
     private void showFirend(boolean isFirend){
-        mBtnAddContact.setVisibility(isFirend?View.GONE:View.VISIBLE);
-        mBtnSendMsg.setVisibility(isFirend?View.VISIBLE:View.GONE);
-        mBtnSendVideo.setVisibility(isFirend?View.VISIBLE:View.GONE);
+        if (user.getMUserName().equals(EMClient.getInstance().getCurrentUser())){
+            mBtnAddContact.setVisibility(View.GONE);
+            mBtnSendMsg.setVisibility(View.GONE);
+            mBtnSendVideo.setVisibility(View.GONE);
+        }else {
+            mBtnAddContact.setVisibility(isFirend ? View.GONE : View.VISIBLE);
+            mBtnSendMsg.setVisibility(isFirend ? View.VISIBLE : View.GONE);
+            mBtnSendVideo.setVisibility(isFirend ? View.VISIBLE : View.GONE);
+        }
     }
 
     @OnClick(R.id.btn_add_contact)
@@ -121,11 +132,14 @@ public class FriendProfileActivity extends BaseActivity {
     }
 
     @OnClick(R.id.btn_send_msg)
-    public void sendMsg() {
+    public void sendMsg(){
         finish();
         MFGT.gotoChat(FriendProfileActivity.this,user.getMUserName());
     }
 
+    /**
+     * make a video call
+     */
     @OnClick(R.id.btn_send_video)
     public void startVideoCall() {
         if (!EMClient.getInstance().isConnected())
@@ -134,33 +148,34 @@ public class FriendProfileActivity extends BaseActivity {
             startActivity(new Intent(FriendProfileActivity.this, VideoCallActivity.class)
                     .putExtra("username", user.getMUserName())
                     .putExtra("isComingCall", false));
+            // videoCallBtn.setEnabled(false);
         }
     }
 
-    private void syncUserInfo() {
+    private void syncUserInfo(){
         //从服务器异步加载用户的最新信息,填充到好友列表或者新的朋友列表
         model.loadUserInfo(FriendProfileActivity.this, user.getMUserName(),
                 new OnCompleteListener<String>() {
                     @Override
                     public void onSuccess(String s) {
-                        if (s != null) {
-                            Result result = ResultUtils.getResultFromJson(s, User.class);
-                            if (result != null && result.isRetMsg()) {
+                        if (s!=null){
+                            Result result = ResultUtils.getResultFromJson(s,User.class);
+                            if (result!=null && result.isRetMsg()){
                                 User u = (User) result.getRetData();
-                                if (u != null) {
-                                    if (msg != null) {
+                                if (u!=null){
+                                    if (msg!=null) {
                                         //update msg
                                         ContentValues values = new ContentValues();
                                         values.put(InviteMessgeDao.COLUMN_NAME_NICK, u.getMUserNick());
                                         values.put(InviteMessgeDao.COLUMN_NAME_AVATAR, u.getAvatar());
                                         InviteMessgeDao dao = new InviteMessgeDao(FriendProfileActivity.this);
-                                        dao.updateMessage(msg.getId(), values);
-                                    } else if (isFriend) {
+                                        dao.updateMessage(msg.getId(),values);
+                                    }else if(isFriend) {
                                         //update user
                                         SuperWeChatHelper.getInstance().saveAppContact(u);
                                     }
-//                                    user = u;
-//                                    showUserInfo();
+                                    user = u;
+                                    showUserInfo();
                                 }
                             }
                         }
