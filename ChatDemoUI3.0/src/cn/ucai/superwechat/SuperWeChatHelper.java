@@ -776,8 +776,10 @@ public class SuperWeChatHelper {
         public void onContactDeleted(String username) {
             L.e(TAG,"MyContactListener,onContactDeleted username="+username);
             Map<String, EaseUser> localUsers = SuperWeChatHelper.getInstance().getContactList();
+            SuperWeChatHelper.getInstance().getAppContactList().remove(username);
             localUsers.remove(username);
             userDao.deleteContact(username);
+            userDao.deleteAppContact(username);
             inviteMessgeDao.deleteMessage(username);
 
             EMClient.getInstance().chatManager().deleteConversation(username, false);
@@ -1259,6 +1261,43 @@ public class SuperWeChatHelper {
         }
     }
 
+    public void asyncFetchAppContactsFromServer(){
+        if (isLoggedIn()){
+            userModel.loadContact(appContext, EMClient.getInstance().getCurrentUser(),
+                    new OnCompleteListener<String>() {
+                        @Override
+                        public void onSuccess(String s) {
+                            if (s!=null){
+                                Result result = ResultUtils.getListResultFromJson(s, User.class);
+                                if (result!=null && result.isRetMsg()){
+                                    List<User> list = (List<User>) result.getRetData();
+                                    L.e(TAG,"asyncFetchAppContactsFromServer,list="+list.size());
+                                    Map<String, User> userlist = new HashMap<String, User>();
+                                    for (User user : list) {
+                                        EaseCommonUtils.setAppUserInitialLetter(user);
+                                        userlist.put(user.getMUserName(), user);
+                                    }
+                                    // save the contact list to cache
+                                    getAppContactList().clear();
+                                    getAppContactList().putAll(userlist);
+                                    L.e(TAG,"asyncFetchAppContactsFromServer,save the contact list to cache="+userlist.size());
+                                    // save the contact list to database
+                                    UserDao dao = new UserDao(appContext);
+                                    List<User> users = new ArrayList<User>(userlist.values());
+                                    dao.saveAppContactList(users);
+                                    L.e(TAG,"asyncFetchAppContactsFromServer,save the contact list to database="+users.size());
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onError(String error) {
+
+                        }
+                    });
+        }
+    }
+
     public void asyncFetchContactsFromServer(final EMValueCallBack<List<String>> callback){
         if(isSyncingContactsWithServer){
             return;
@@ -1333,41 +1372,6 @@ public class SuperWeChatHelper {
 
             }
         }.start();
-    }
-
-    public void asyncFetchAppContactsFromServer() {
-        if (isLoggedIn()) {
-            userModel.loadContact(appContext, EMClient.getInstance().getCurrentUser(),
-                    new OnCompleteListener<String>() {
-                        @Override
-                        public void onSuccess(String s) {
-                            if (s!=null) {
-                                Result result = ResultUtils.getListResultFromJson(s, I.User.class);
-                                if (result!=null && result.isRetMsg()) {
-                                    List<User> list = (List<User>) result.getRetData();
-                                    Map<String, User> userlist = new HashMap<String, User>();
-                                    for (User user : list) {
-                                        EaseCommonUtils.setAppUserInitialLetter(user);
-                                        userlist.put(user.getMUserName(), user);
-                                    }
-                                    // save the contact list to cache
-                                    getAppContactList().clear();
-                                    getAppContactList().putAll(userlist);
-                                    // save the contact list to database
-                                    UserDao dao = new UserDao(appContext);
-                                    List<User> users = new ArrayList<User>(userlist.values());
-                                    dao.saveAppContactList(users);
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onError(String error) {
-
-                        }
-                    });
-        }
-
     }
 
     public void notifyContactsSyncListener(boolean success){
@@ -1513,7 +1517,8 @@ public class SuperWeChatHelper {
      * @return
      */
     public Map<String, User> getAppContactList() {
-        if (isLoggedIn() && appContactList == null) {
+        if ((isLoggedIn() && appContactList == null) || appContactList.size()==0){
+
             appContactList = demoModel.getAppContactList();
         }
 
