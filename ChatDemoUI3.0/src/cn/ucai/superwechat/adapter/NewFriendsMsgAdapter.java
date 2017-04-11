@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.easeui.domain.Group;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 
 import java.util.List;
@@ -89,14 +90,17 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 
 			if(msg.getGroupId() != null){ // show group name
 				holder.groupContainer.setVisibility(View.VISIBLE);
-				holder.groupname.setText(msg.getGroupName());
+				holder.groupname.setText(msg.getGroupId());
+				holder.name.setText(msg.getGroupName());
+				EaseUserUtils.setGroupAvatar(context, Group.getAvatar(msg.getGroupId()),holder.avator);
 			} else{
 				holder.groupContainer.setVisibility(View.GONE);
+				EaseUserUtils.setAvatar(context,msg.getAvatar(),holder.avator);
+				holder.name.setText(msg.getNickname());
 			}
 
 			holder.reason.setText(msg.getReason());
-			holder.name.setText(msg.getNickname());
-			EaseUserUtils.setAvatar(context,msg.getAvatar(),holder.avator);
+
 			// holder.time.setText(DateUtils.getTimestampString(new
 			// Date(msg.getTime())));
 			if (msg.getStatus() == InviteMessage.InviteMesageStatus.BEAGREED) {
