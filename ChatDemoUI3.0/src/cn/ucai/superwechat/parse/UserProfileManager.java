@@ -216,6 +216,14 @@ public class UserProfileManager {
 //		}
 //		return avatarUrl;
     }
+
+    public void updateCurrentAppUserInfo(User user){
+        currentAppUser = user;
+        setCurrentAppUserNick(user.getMUserNick());
+        setCurrentAppUserAvatar(user.getAvatar());
+        SuperWeChatHelper.getInstance().saveAppContact(user);
+    }
+
     public void asyncGetCurrentAppUserInfo() {
         userModel.loadUserInfo(appContext, EMClient.getInstance().getCurrentUser(),
                 new OnCompleteListener<String>() {
@@ -227,10 +235,11 @@ public class UserProfileManager {
                                 User user = (User) result.getRetData();
 //								L.e(TAG,"asyncGetCurrentAppUserInfo,user="+user);
                                 if (user!=null){
-                                    currentAppUser = user;
-                                    setCurrentAppUserNick(user.getMUserNick());
-                                    setCurrentAppUserAvatar(user.getAvatar());
-                                    SuperWeChatHelper.getInstance().saveAppContact(user);
+                                    updateCurrentAppUserInfo(user);
+//									currentAppUser = user;
+//									setCurrentAppUserNick(user.getMUserNick());
+//									setCurrentAppUserAvatar(user.getAvatar());
+//									SuperWeChatHelper.getInstance().saveAppContact(user);
                                 }
                             }
                         }
