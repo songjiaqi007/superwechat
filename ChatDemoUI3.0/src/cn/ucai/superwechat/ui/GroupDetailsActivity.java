@@ -57,6 +57,7 @@ import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.db.GroupModel;
 import cn.ucai.superwechat.db.IGroupModel;
 import cn.ucai.superwechat.db.OnCompleteListener;
+import cn.ucai.superwechat.utils.CommonUtils;
 import cn.ucai.superwechat.utils.L;
 import cn.ucai.superwechat.utils.Result;
 import cn.ucai.superwechat.utils.ResultUtils;
@@ -367,6 +368,28 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				ownerAdminAdapter.notifyDataSetChanged();
 			}
 		});
+	}
+
+	private void updateGroupNameByHxId(String newName) {
+		mModel.updateGroupNameByHxId(GroupDetailsActivity.this, group.getGroupId(), newName,
+				new OnCompleteListener<String>() {
+					@Override
+					public void onSuccess(String s) {
+						if (s != null) {
+							Result result = ResultUtils.getListResultFromJson(s, Group.class);
+							if (result!=null && result.isRetMsg()) {
+								CommonUtils.showShortToast("更新群组名称成功");
+							}
+						}
+
+
+					}
+
+					@Override
+					public void onError(String error) {
+
+					}
+				});
 	}
 
 	private void debugList(String str, List<String> list) {
