@@ -46,6 +46,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
@@ -176,7 +177,7 @@ public class NewGroupActivity extends BaseActivity {
                         option.style = memberCheckbox.isChecked()? EMGroupManager.EMGroupStyle.EMGroupStylePrivateMemberCanInvite: EMGroupManager.EMGroupStyle.EMGroupStylePrivateOnlyOwnerInvite;
                     }
                     EMGroup emGroup = EMClient.getInstance().groupManager().createGroup(groupName, desc, members, reason, option);
-                    createAppGroup(emGroup);
+                    createAppGroup(emGroup,members);
 
                 } catch (final HyphenateException e) {
                     runOnUiThread(new Runnable() {
@@ -191,7 +192,7 @@ public class NewGroupActivity extends BaseActivity {
         }).start();
     }
 
-    private void createAppGroup(EMGroup emGroup) {
+    private void createAppGroup(final EMGroup emGroup,final String[] members) {
         if (emGroup!=null){
             model.newGroup(NewGroupActivity.this, emGroup.getGroupId(), emGroup.getGroupName(),
                     emGroup.getDescription(), emGroup.getOwner(), emGroup.isPublic(), emGroup.isAllowInvites(),
@@ -205,11 +206,17 @@ public class NewGroupActivity extends BaseActivity {
                                 if (result!=null && result.isRetMsg()){
                                     Group group = (Group) result.getRetData();
                                     if (group!=null){
-                                        success = true;
+                                        if (members.length>0){
+                                            addMembers(group.getMGroupHxid(),getMembers(members));
+                                        }else{
+                                            success = true;
+                                        }
                                     }
                                 }
                             }
-                            createSucces(success);
+                            if (members.length<=0) {
+                                createSucces(success);
+                            }
                         }
 
                         @Override
@@ -218,6 +225,40 @@ public class NewGroupActivity extends BaseActivity {
                         }
                     });
         }
+    }
+
+    private String getMembers(String[] members){
+        String m = Arrays.toString(members).toString();
+        StringBuffer str = new StringBuffer();
+        for (String member : members) {
+            str.append(member).append(",");
+        }
+        L.e(TAG,"getMembers,str="+str);
+        return str.toString();
+    }
+
+    private void addMembers(String hxid,String members){
+        L.e(TAG,"addMembers,members="+members);
+        model.addMembers(NewGroupActivity.this, members, hxid,
+                new OnCompleteListener<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        boolean success = false;
+                        if (s!=null){
+                            Result result = ResultUtils.getResultFromJson(s, Group.class);
+                            if (result!=null && result.isRetMsg()){
+                                success = true;
+                            }
+                        }
+                        createSucces(success);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        L.e(TAG,"addMembers,error="+error);
+                        createSucces(false);
+                    }
+                });
     }
 
     private void createSucces(final boolean success){
